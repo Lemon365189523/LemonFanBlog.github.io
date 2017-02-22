@@ -94,3 +94,5 @@ hr {
 input, select {
     vertical-align:middle;
 }
+
+/*重置样式的目的:是样式在不同浏览器下保持一致*/
