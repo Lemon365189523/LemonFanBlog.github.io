@@ -1,11 +1,30 @@
+/*清理浮动*/
+.clearfix
+{
+    conetent: '';
+    display: block;
+    clear: both;
+}
+
+ul
+{
+    margin: 0;
+}
+
+header
+{
+    background: rgba(0,0,0,0.2);
+}
+
 nav
 {
     background-color: #cccccc;
     height: 50px;
 }
 
-#banner{
-    background-color: #777;
+#banner
+{
+    background-color: transparent;
     height: 700px;
 }
 
@@ -106,6 +125,17 @@ h1
 h2
 {
     font-size: 30px;
+}
+
+h3
+{
+    font-size: 24px;
+}
+
+p
+{
+    font-size: 18px;
+    letter-spacing: 1px;
 }
 
 .hr
@@ -217,4 +247,82 @@ h2
 .text-section > *
 {
     max-width: 90%;
+}
+
+.purple-section
+{
+    padding: 80px;
+    background-color: #262149;
+    color: #ffffff;
+    height: 400px;
+}
+
+.purple-section .heading-wrapper
+{
+    text-align: center;
+}
+
+.purple-section .hr
+{
+    background-color: #373259;
+    width: 60%;
+}
+
+.card
+{
+    float: left;
+    width: 50%;
+    min-height: 300px;
+    padding: 20px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border: 1px solid white;
+}
+
+.card:first-child
+{
+    background: rgba(0,0,0,0.05);
+}
+
+/*叠加0.04*/
+.card:nth-child(2)
+{
+    background: rgba(0,0,0,0.09);
+}
+
+footer
+{
+    background-color: #333;
+    color: #ffffff;
+    min-height: 200px;
+    text-align: center;
+}
+
+ul.share-group
+{
+    display: block;
+    width: 1080px;
+    margin: 0 auto;
+    padding: 50px;
+}
+
+.share-group li
+{
+    display: inline-block;
+    padding: 10px;
+}
+
+.copy
+{
+    padding-bottom: 20px;
+}
+
+.main-wrapper
+{
+    background: #444 url(../Images/banner.jpg);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
 }
