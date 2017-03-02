@@ -320,9 +320,65 @@ ul.share-group
 
 .main-wrapper
 {
+    overflow: hidden;
     background: #444 url(../Images/banner.jpg);
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: cover;
-    background-position: center;
+    background-position: center
+}
+
+/*mask*/
+.mask
+{
+    display: none;
+    position: fixed;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right:0;
+    background: rgba(0,0,0,0.3);
+}
+
+/*侧栏CSS*/
+#sidebar
+{
+    position: fixed;
+    top:0;
+    right: -300px;
+    bottom:0;
+    width: 300px;
+    background: #333333;
+    color: white;
+    padding: 20px 0;
+}
+
+#sidebar ul
+{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#sidebar ul a
+{
+    text-decoration: none;
+    padding: 10px 30px;
+    width: 100%;
+    display: inline-block;
+    color: white;
+}
+
+#sidebar ul a:hover
+{
+    background: #444444;
+}
+
+/*返回顶部按钮*/
+#back-to-top
+{
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    border: 1px solid #888888;
 }
