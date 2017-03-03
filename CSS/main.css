@@ -167,6 +167,11 @@ p
     transform: rotate(45deg);
     margin: 20px;
 }
+.green-section .icon-group .icon a
+{
+    display: block;
+    /*transform: rotate(-45deg);*/
+}
 
 .icon-group
 {

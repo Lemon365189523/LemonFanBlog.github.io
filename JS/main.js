@@ -9,22 +9,25 @@
 
 ;$(function () {
     'use strict';
-
+    // 获取元素
     var sidebar = $('#sidebar'),
         mask = $('.mask'),
         sidebar_trigger = $('#sidebar_trigger'),
-        backButton = $('#back-to-top');
+        backButton = $('#back-to-top'),
+        moreButton = $('#more_a'),
+        header = $('.main-wrapper header');
 
+    // 显示侧边栏动画
     function showSideBar() {
         mask.fadeIn();
         sidebar.animate({'right': 0});
     }
-
+    // 隐藏侧边栏动画
     function hideSideBar() {
         mask.fadeOut();
         sidebar.animate({'right': -sidebar.width()});
     }
-
+    //点击侧边栏
     sidebar_trigger.on('click', showSideBar);
     mask.on('click', hideSideBar);
 
@@ -46,4 +49,13 @@
     })
 
     $(window).trigger('scroll');
+
+    //更多按钮 滑动
+    moreButton.on('click',  function(event) {
+        $('html, body').animate({
+            scrollTop: header.height(),
+            },400);
+        
+    });
+
 })
