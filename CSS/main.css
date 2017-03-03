@@ -18,7 +18,7 @@ header
 
 nav
 {
-    background-color: #cccccc;
+    background-color: #16a085;
     height: 50px;
 }
 
@@ -69,6 +69,7 @@ nav ul li.logo
 #banner .inner h1
 {
     margin: 0;
+    color: #ffffff;
 }
 
  button
@@ -82,6 +83,7 @@ nav ul li.logo
  #banner button
  {
      padding:14px 60px;
+     background-color: #16a085;
  }
 
  #banner .inner .more
@@ -95,6 +97,7 @@ nav ul li.logo
      line-height:30px;
      margin: 30px 0;
      font-size: 18px;
+     color: #ffffff;
  }
 
  .logo
@@ -144,30 +147,30 @@ p
     height: 2px;;
     margin: 20px auto;
 }
-
-.green-section
+/*专题*/
+.zhuanti-section
 {
-    background-color: #089DB0;
+    background-color:#1abc9c;
     color: #ffffff;
     text-align: center;
     padding: 100px 0;
 }
 
-.green-section .hr
+.zhuanti-section .hr
 {
-    background-color: #078494;
+    background-color: #ffffff;
 }
 
-.green-section .icon-group .icon
+.zhuanti-section .icon-group .icon
 {
     display: inline-block;
     width: 80px;
     height: 80px;
-    border: 1px solid #0D6F7C;
+    /*border: 1px solid rgb(100,100,200);*/
     transform: rotate(45deg);
     margin: 20px;
 }
-.green-section .icon-group .icon a
+.zhuanti-section .icon-group .icon a
 {
     display: block;
     /*transform: rotate(-45deg);*/
@@ -184,25 +187,52 @@ p
     margin: 0 auto;
 }
 
-.gray-section
+/*文章*/
+.list-section
 {
-    background-color: #252F34;
-    color: #ffffff;
+    background-color: #ffffff;
+    color: black;
 }
 
-.gray-section .img-section
+.list-section hr
 {
-    width: 45%;
+    width: 90%;
+    height: 2px;
+    margin-left: 5%;
+    
 }
 
-.img-section img
+.list-section .text-section
 {
-    width: 100%;
+    margin-right: 5%;
 }
 
-.gray-section .text-section
+.article-preview
 {
-    width: 55%;
+    min-height: 200px;
+}
+
+.article-preview .img-section
+{
+    margin-left: 5%
+}
+
+.article-preview img
+{
+    height: 180px;
+    width: 180px;
+}
+
+.article-preview div
+{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.article-preview p 
+{
+    word-wrap: break-word;
+    word-break: normal;
 }
 
 .article-preview > div
@@ -212,10 +242,10 @@ p
     font-size: 0;
 }
 /*奇偶选择器*/
-.article-preview:nth-child(odd)
+/*.article-preview:nth-child(odd)
 {
-    background-color: rgba(255,255,255,0.05);
-}
+    background-color: rgba(0,0,0,0.1);
+}*/
 
 /*伪元素, after 在元素之后添加内容*/
 .article-preview:after
@@ -228,7 +258,7 @@ p
 .text-section
 {
     position: relative;
-    top:68px;
+    top:20px;
     left: 50px;
 }
 
@@ -249,15 +279,11 @@ p
     letter-spacing: 1px;
 }
 
-.text-section > *
-{
-    max-width: 90%;
-}
-
+/*>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 .purple-section
 {
     padding: 80px;
-    background-color: #262149;
+    background-color: #16a085;
     color: #ffffff;
     height: 400px;
 }
@@ -269,7 +295,7 @@ p
 
 .purple-section .hr
 {
-    background-color: #373259;
+    background-color: #ffffff;
     width: 60%;
 }
 

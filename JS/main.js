@@ -2,13 +2,9 @@
  * Created by Macx on 2017/3/1.
  */
 
-//$(document).ready(function(){
-//
-//
-//});
 
 ;$(function () {
-    'use strict';
+    // 'use strict';
     // 获取元素
     var sidebar = $('#sidebar'),
         mask = $('.mask'),
