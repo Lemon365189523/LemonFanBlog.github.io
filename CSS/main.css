@@ -279,8 +279,8 @@ p
     position: relative;
     background: #ffff99;
     width: 60%;
-    display: block;
-
+    left: 50px;
+    top:20px;
 }
 
 .other-section *

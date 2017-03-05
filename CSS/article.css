@@ -11,12 +11,14 @@ body
 
 .markdown-body
 {
-    max-width: 100%;
+    max-width: 800px;
     padding: 3em;
-
+    /*水平居中*/
+    margin: 0 auto;
 }
 
 a:visited
 {
     color: #ffffff;
 }
+
