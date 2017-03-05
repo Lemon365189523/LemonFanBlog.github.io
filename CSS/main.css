@@ -18,8 +18,11 @@ header
 
 nav
 {
+    position: fixed;
     background-color: #16a085;
     height: 50px;
+    width: 100%;
+    z-index: 1;
 }
 
 #banner
@@ -229,10 +232,10 @@ p
     margin-bottom: 10px;
 }
 
-.article-preview p 
+.article-preview p
 {
     word-wrap: break-word;
-    word-break: normal;
+    word-break: break-all;
 }
 
 .article-preview > div
@@ -241,11 +244,6 @@ p
     /*两个div间有间隙,把字体变为0*/
     font-size: 0;
 }
-/*奇偶选择器*/
-/*.article-preview:nth-child(odd)
-{
-    background-color: rgba(0,0,0,0.1);
-}*/
 
 /*伪元素, after 在元素之后添加内容*/
 .article-preview:after
@@ -258,6 +256,7 @@ p
 .text-section
 {
     position: relative;
+    width: 70%;
     top:20px;
     left: 50px;
 }
@@ -267,67 +266,42 @@ p
     margin-bottom: 20px;
 }
 
-.text-section .sub-heading
-{
-    font-size: 22px;
-    margin-top: 0;
-}
-
 .text-section p
 {
     font-size: 18px;
     letter-spacing: 1px;
+    color: #888888;
+    line-height: 25px;
 }
 
-/*>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
-.purple-section
+.other-section
 {
-    padding: 80px;
-    background-color: #16a085;
-    color: #ffffff;
-    height: 400px;
-}
-
-.purple-section .heading-wrapper
-{
-    text-align: center;
-}
-
-.purple-section .hr
-{
-    background-color: #ffffff;
+    position: relative;
+    background: #ffff99;
     width: 60%;
+    display: block;
+
 }
 
-.card
+.other-section *
 {
-    float: left;
-    width: 50%;
-    min-height: 300px;
-    padding: 20px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    border: 1px solid white;
+    font-size: 17px;
 }
 
-.card:first-child
+.other-section time
 {
-    background: rgba(0,0,0,0.05);
+    margin-right: 20px;
+    color: #c7c7c7;
 }
 
-/*叠加0.04*/
-.card:nth-child(2)
-{
-    background: rgba(0,0,0,0.09);
-}
-
+/*>>>>>>>>>>>>>>>页脚>>>>>>>>>>>>>>>>>>>>>>>>*/
 footer
 {
-    background-color: #333;
+    background-color: #16a085;
     color: #ffffff;
     min-height: 200px;
     text-align: center;
+    font-size: 18px;
 }
 
 ul.share-group
@@ -369,6 +343,7 @@ ul.share-group
     left: 0;
     right:0;
     background: rgba(0,0,0,0.3);
+    z-index: 2;
 }
 
 /*侧栏CSS*/
@@ -382,6 +357,7 @@ ul.share-group
     background: #333333;
     color: white;
     padding: 20px 0;
+    z-index: 2;
 }
 
 #sidebar ul
@@ -397,12 +373,12 @@ ul.share-group
     padding: 10px 30px;
     width: 100%;
     display: inline-block;
-    color: white;
+    color: #ffffff;
 }
 
 #sidebar ul a:hover
 {
-    background: #444444;
+    background: #16a085;
 }
 
 /*返回顶部按钮*/

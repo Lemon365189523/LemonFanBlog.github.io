@@ -1,0 +1,22 @@
+.article-content
+{
+
+}
+
+body
+{
+    max-width: 100%;
+    padding: 0;
+}
+
+.markdown-body
+{
+    max-width: 100%;
+    padding: 3em;
+
+}
+
+a:visited
+{
+    color: #ffffff;
+}
