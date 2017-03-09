@@ -224,6 +224,7 @@ p
 {
     height: 180px;
     width: 180px;
+    /*border: none;*/
 }
 
 .article-preview div
@@ -277,7 +278,6 @@ p
 .other-section
 {
     position: relative;
-    background: #ffff99;
     width: 60%;
     left: 50px;
     top:20px;
@@ -294,6 +294,23 @@ p
     color: #c7c7c7;
 }
 
+.other-section span
+{
+    margin: 0 15px ; 
+    color: #c7c7c7;
+}
+
+.readAll-button
+{
+    margin-left: 20px;
+    border: 1px solid;
+    border-radius: 10px;
+    text-decoration: none;
+    display: inline-block;
+    color: #1abc9c;
+    padding: 4px 15px;
+}
+
 /*>>>>>>>>>>>>>>>页脚>>>>>>>>>>>>>>>>>>>>>>>>*/
 footer
 {
@@ -307,7 +324,7 @@ footer
 ul.share-group
 {
     display: block;
-    width: 1080px;
+    width: inherit;
     margin: 0 auto;
     padding: 50px;
 }

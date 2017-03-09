@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>文章模板</title>
+	<meta charset="utf-8">
+    <script src="JS/jQuery.js" type="text/javascript"></script>
+    <script src="JS/main.js"></script>
+    <!--常规化重置CSS 保留部分原有的样式-->
+    <link rel="stylesheet" href="CSS/CSSReset.css">
+    <link rel="stylesheet" href="CSS/main.css">
+    <!--markdown生成的代码-->
+    <link rel="stylesheet" href="CSS/markDown.css">
+
+    <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
+    <script src="JS/article.js"></script>
+    <link rel="stylesheet" href="CSS/article.css">
+</head>
+<body>
+<div>
+    <nav id="nav">
+        <div class="logo"><a href=""></a></div>
+        <ul>
+            <li><a href="javascript:void(0);" class="active">首页</a></li>
+            <li><a href="javascript:void(0);" >链接2</a></li>
+            <li><a href="javascript:void(0);" >链接3</a></li>
+            <li id="sidebar_trigger"><a href="##" >侧栏菜单</a></li>
+        </ul>
+    </nav>
+</div>	
+<!-- 内容  -->
+
+<!--页脚-->
+<footer>
+    <ul class="share-group">
+        <li>item1</li>
+        <li>item2</li>
+        <li>item3</li>
+        <li>item4</li>
+        <li>item5</li>
+    </ul>
+    <div class="copy">
+        &copy 范伟健
+    </div>
+</footer>
+<!--遮盖-->
+<div class="mask"></div>
+<!--侧边栏-->
+<div id="sidebar">
+    <ul>
+        <li><a href="">item1</a></li>
+        <li><a href="">item2</a></li>
+        <li><a href="">item3</a></li>
+        <li><a href="">item4</a></li>
+        <li><a href="">item5</a></li>
+    </ul>
+</div>
+
+<button id="back-to-top">返回顶部</button>
+
+</body>
+</html>

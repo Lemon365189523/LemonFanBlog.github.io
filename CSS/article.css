@@ -22,3 +22,13 @@ a:visited
     color: #ffffff;
 }
 
+nav ul li a, .logo a
+{
+    line-height: 50px;
+    text-decoration: none;
+    display: inline-block;
+    /*继承父元素*/
+    height: inherit;
+    color: #fff;
+}
+
