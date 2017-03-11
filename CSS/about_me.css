@@ -1,0 +1,55 @@
+.about-header
+{
+    overflow: hidden;
+    background-size: cover;
+    background: #444 url(../Images/pic7.jpg) no-repeat  center;
+}
+
+.about-banner
+{
+    min-height: 600px;
+    width: 100%;
+
+}
+
+.header-image
+{
+    margin: 0 auto;
+    position: relative;
+    padding-top: 100px;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.header-image img
+{
+    width:150px;
+    height: 150px;
+    margin-bottom: 20px;
+    border: 1px solid #FFFFFF;
+    border-radius: 50%;
+}
+
+.self-introduction
+{
+    color: white;
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.self-introduction p
+{
+    padding: 12px;
+}
+
+#start_p
+{
+    border-top: 2px solid #fff;
+}
+
+#end_p
+{
+    border-bottom: 2px solid #ffffff;
+}

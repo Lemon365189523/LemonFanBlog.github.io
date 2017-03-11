@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Foundation框架中常用类</title>
+    <meta charset="utf-8">
+    <script src="JS/jQuery.js" type="text/javascript"></script>
+    <script src="JS/main.js"></script>
+    <!--常规化重置CSS 保留部分原有的样式-->
+    <link rel="stylesheet" href="CSS/CSSReset.css">
+    <link rel="stylesheet" href="CSS/main.css">
+    <!--markdown生成的代码-->
+    <link rel="stylesheet" href="CSS/markDown.css">
+
+    <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
+    <script src="JS/article.js"></script>
+    <link rel="stylesheet" href="CSS/article.css">
+    <link rel="stylesheet" href="/styles/default.css">
+    <script src="JS/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+<div>
+    <nav id="nav">
+        <div class="logo"><a href=""></a></div>
+        <ul>
+            <li><a href="javascript:void(0);" class="active">首页</a></li>
+            <li><a href="javascript:void(0);" >链接2</a></li>
+            <li><a href="javascript:void(0);" >链接3</a></li>
+            <li id="sidebar_trigger"><a href="##" >侧栏菜单</a></li>
+        </ul>
+    </nav>
+</div>
+<!-- 内容  -->
+<div class="markdown-body">
+    <h1 id="toc_0">Foundation框架中常用类</h1>
+
+    <h2 id="toc_1">1.NSObject</h2>
+
+    <p><strong>NSObject协议</strong></p>
+
+    <blockquote>
+        <p>NSObject协议声明的方法可分为下列几种：<br/>
+            1. 识别类的代理<br/>
+            2. 识别和比较对象<br/>
+            3. 描述对象<br/>
+            4. 对象内省<br/>
+            5. 发送消息</p>
+    </blockquote>
+
+    <p>NSObject类是大多数OC类层次结构中的根类。<br/>
+        NSObject的类方法和实例方法提供的功能</p>
+
+    <blockquote>
+        <ol>
+            <li>基本对象行为</li>
+            <li>创建和初始化</li>
+            <li>动态特征（运行时系统的）</li>
+        </ol>
+    </blockquote>
+
+    <h4 id="toc_2">1.基本行为</h4>
+
+    <p>description,实例方法返回对象的名称和内存地址。<br/>
+        description类方法，显示类名。<br/>
+        debugDescription实例方法，返回对象的调试信息</p>
+
+<pre><code>NSArray *array = [NSArray array];
+    NSString *str1 = [array description];
+    NSString *str2 = [NSArray description];
+    NSString *str3 = [array debugDescription];
+</code></pre>
+
+    <p>NSObject协议还声明isEqual：，hash等方法</p>
+
+    <p>hash方法能够返回一个NSUInteger类型的值，该值用于散列表结构中。<br/>
+        通过hash可以获取对象在集合中的散类值，可用来判断对象是否存在集合中。</p>
+
+    <h4 id="toc_3">2.发送消息</h4>
+
+    <p>NSObject协议声明了一系列performSelector:实例方法，使用这些方法可以向对象发送消息。<br/>
+        performSelector与标准对象消息区别，它能够发送在运行时确定的消息（例如动态添加方法）。</p>
+
+    <blockquote>
+        <p>当向对象发送消息，这些方法能提供额外的功能：<br/>
+            1.线程选择<br/>
+            2.方法调用语义（同步，分块）<br/>
+            3.事件处理模式<br/>
+            4.延迟方法调用<br/>
+            ps:部分消息调用方法在NSRunLoop里的NSObject分类中。</p>
+    </blockquote>
+
+    <h4 id="toc_4">3.创建和初始化</h4>
+
+    <p>类方法initialize用于加载类之后初次使用该类前初始化这个。为了避免该方法被调用两次的情况（除了被目标类调用外又被父类调用），应使用验证调用者为目标类。</p>
+
+<pre><code>+(void)initialize{
+    if (self = [MyClass class]){
+    //初始化该类的逻辑
+    }
+    }
+</code></pre>
+
+    <p>load方法，在app启动类被加载时就调用，调用load方法在调用main()函数之前执行。</p>
+
+    <p><code><br/>
+        0-&gt; +[_10ViewController load]<br/>
+        1-&gt;+[_10ViewController initialize]<br/>
+        2-&gt;-[_10ViewController init]<br/>
+        3-&gt;-[_10ViewController viewDidLoad]<br/>
+        4-&gt;-[_10ViewController viewWillAppear:]<br/>
+    </code></p>
+
+    <h2 id="toc_5">2.NSProxy</h2>
+
+    <p>NSProxy类是一种抽象的根类（抽象类是指无法直接实例化的类，它们可能没有实现代码，或者拥有的实现代码不完整）。<br/>
+        NSProxy用于实现代理，它通过实现一组经过简化的方法，代替目标对象捕捉和处理所有消息。<br/>
+        <code><br/>
+            - (void)forwardInvocation:(NSInvocation *)anInvocation;<br/>
+            - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel;<br/>
+        </code></p>
+
+    <p>此外NSProxy类的子类必须声明并实现至少一个init方法，才能符合OC中创建和初始化对象的惯例。</p>
+
+    <h2 id="toc_6">3.NSString</h2>
+
+    <p>1.创建于初始化<br/>
+        2.扫描值<br/>
+        3.字符串搜索和比较 （NSRange）<br/>
+        4.字符串I/O (可通过文件和URL创建和初始化字符串)<br/>
+        5.内省 （hasPrefix:..）<br/>
+        6.修改字符串（NSMutableString）</p>
+
+    <h4 id="toc_7">NSAttributedString</h4>
+
+    <h2 id="toc_8">4.值对象（NSValue,NSNumber...）</h2>
+
+    <p>NSValue类是一个单数据项容器。它可以容纳固定长度的C语言数据类型和OBjective-C数据类型。</p>
+
+<pre><code>int ten = 10;
+    int *tenPtr = &amp;ten;
+    NSValue *myInt = [NSValue value:&amp;tenPtr withObjCType:@encode(int *)];
+    int result = *(int *) [myInt pointerValue];
+</code></pre>
+
+    <h4 id="toc_9">NSNumber类</h4>
+
+    <p>NSNumber是NSValue的子类用于容纳原始数据类型。</p>
+
+    <h5 id="toc_10">NSDecimalNumber类</h5>
+
+    <p>NSDecimalNumber是NSNumber的子类，用于执行十进制运算。</p>
+
+    <h2 id="toc_11">5.对日期和时间的支持（NSDate，NSCalendar...）</h2>
+
+    <p>NSCalendar,NSDate,NSCalendarDate,NSDateComponents和NSTimeZone类，提供了日期和时间的编程和格式支持。</p>
+
+<pre><code>NSDate *now = [[NSDate alloc] init];
+    NSTimeInterval secondsPerDay = 24*60*60;
+    NSDate *tomorrow = [now dateByAddingTimeInterval:secondsPerDay];
+    //compare 比较时间 返回一个升降序的枚举
+    NSComparisonResult dateResult = [now compare:tomorrow];
+</code></pre>
+
+    <p><strong>NSCalendar</strong><br/>
+        NSCalendar类能够封装日历信息，调度多个时间段。</p>
+
+    <h2 id="toc_12">6.NSCache类</h2>
+
+    <p>NSCache类提供了一块内存系统缓存、用于临时存储对象。<br/>
+        NSCache还提供管理缓存大小，丢弃对象和缓存协议，提供自动移除策略</p>
+
+<pre><code>NSCache *cache = [[NSCache alloc] init];
+    //设置缓存策略 限制大小
+    [cache setCountLimit:5];
+    [cache setObject:@&quot;hello world&quot; forKey:@&quot;greeting&quot;];
+</code></pre>
+
+    <h2 id="toc_13">7.NSArray和NSMutableArray类</h2>
+
+    <p>NSArray和NSMutableArray可以管理有序对象集合，其中的对象不必是相同类型。</p>
+
+    <h2 id="toc_14">8.NSPointerArray类</h2>
+
+    <p>NSPointerArray类是与NSMutableArray类类似的可变集合，其实例中可以容纳任意指针和NULL值。使用它还可以通过设置数组计算管理集合，例如，如果集合中元素的数量小于数组的计数，那马该类就会为这个集合附上NULL值；如果集合中元素的数量大于数组计算，那么超出计算的元素就会被删除。</p>
+
+    <h2 id="toc_15">9.NSDictionary</h2>
+
+    <p>NSDictionary和NSMutableDictionary都是可以管理键值集合。<br/>
+        这些类支出的操作包括创建和初始化、查询、查找集合中的类，以及对集合中的对象进行过滤、比较和排序。<br/>
+        排序选项包括按选择器排序和按块排序，前者使用keySortedByValueUsingSelector:方法，后者使用keySortedByValueUsingComparator:方法</p>
+
+    <h2 id="toc_16">10.NSMapTable</h2>
+
+    <p>NSMapTable类是与NSDictionary类类似的集合，它提供了更多存储选项。尤其是，它可以含有任意指针。NSMapTable类还可以存储和值得软引用。</p>
+
+    <h2 id="toc_17">11.NSSet和NSMutableSet</h2>
+
+    <p>这两个类管理无序对象集合，其中的对象不必是同一类型的。<br/>
+        存储在NSSet实例中的对象会拥有唯一性，<br/>
+        除了NSCountedSet类之外，NS..Set类都可以确保同一对象仅在集合中出现一次。</p>
+
+    <h2 id="toc_18">12.NSCountedSet</h2>
+
+    <p>NSCountedSet类可以管理可变集合，它允许重复添加对象。每个对象都有一个相关计数，NSCountedSet对象会记录每个对象被插入集合的次数和删除该对象所需要的相同删除次数。</p>
+
+<pre><code>NSCountedSet *set = [NSCountedSet setWithObjects:@(1),@(2),@(2),@(3) ,nil];
+    NSLog(@&quot;set-&gt;%@&quot;,set);
+    [set removeObject:@(2)];
+    NSLog(@&quot;set-&gt;%@&quot;,set);
+</code></pre>
+
+    <p><code><br/>
+        set-&gt;&lt;NSCountedSet: 0x61800003e5c0&gt; (3 [1], 1 [1], 2 [2])<br/>
+        set-&gt;&lt;NSCountedSet: 0x61800003e5c0&gt; (3 [1], 1 [1], 2 [1])<br/>
+    </code></p>
+
+    <h2 id="toc_19">13.NSHashTable类</h2>
+
+    <p>与NSSet类似，NSHashTable类也可以管理可变集合，但它提供了更多选项。它可以存储任意指针，还可以存储键和值的弱引用。</p>
+
+    <h2 id="toc_20">14.NSPointerFunction类</h2>
+
+    <p>NSPointerFunction类定义管理指针函数的函数。NSHashTable、NSMapTable和NSPointerArray对象通常使用NSPointerFunction定义指针行为。</p>
+
+    <h2 id="toc_21">15.XML处理类</h2>
+
+    <p>XML处理类支持通用XML文档管理和解析功能。这些类可以将XML文档表现为层次树结构，并且支持对XML文档节点查询和操作。</p>
+
+    <p>NSXML类可以创建、操作、修改和查询XML文档。</p>
+
+    <p>使用NSXMlParser类可以通过事件驱动<br/>
+        方式解析XML文档。NSXMLParser实例是通过代理配置的，所有的解析等特定方法都在代理方法调用，例如开始与结束解析文档过程、处理XML元素和特性等时间点..。<br/>
+        必须准守NSXMLParserDelegate协议。</p>
+
+<pre><code>NSString *bundle = [[NSBundle mainBundle] pathForResource:@&quot;Info&quot; ofType:@&quot;plist&quot;];
+    NSURL *url = [NSURL fileURLWithPath:bundle];
+    NSXMLParser *parser = [[NSXMLParser alloc] initWithContentsOfURL:url];
+    [parser setDelegate:self];
+    [parser setShouldResolveExternalEntities:YES];
+    [parser parse];
+</code></pre>
+
+    <h2 id="toc_22">16.谓词类</h2>
+
+    <p>谓词是一种逻辑操作符，它由一个或多个表达式构成，而且会返回真值或假值。<br/>
+        可使用谓词设置搜索条件，也可以使用谓词过滤返回结果。<br/>
+        NSExpression类用于在谓词中代表表达式，而且它支持多种表达类型。NSPredicate、NSComparisonPredicate和NSCompoundPredicate类用于创建谓词。</p>
+
+<pre><code>NSArray *nArray = @[@(1),@(2),@(3)];
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@&quot;SELF &gt; 1&quot;];
+    NSArray *fileterdArray = [nArray filteredArrayUsingPredicate:pred];
+    NSLog(@&quot;fileter:%@&quot;,fileterdArray);
+</code></pre>
+
+</div>
+<!--页脚-->
+<footer>
+    <ul class="share-group">
+        <li>item1</li>
+        <li>item2</li>
+        <li>item3</li>
+        <li>item4</li>
+        <li>item5</li>
+    </ul>
+    <div class="copy">
+        &copy 2017 Lemon
+    </div>
+</footer>
+<!--遮盖-->
+<div class="mask"></div>
+<!--侧边栏-->
+<div id="sidebar">
+    <ul>
+        <li><a href="">item1</a></li>
+        <li><a href="">item2</a></li>
+        <li><a href="">item3</a></li>
+        <li><a href="">item4</a></li>
+        <li><a href="">item5</a></li>
+    </ul>
+</div>
+
+<button id="back-to-top">返回顶部</button>
+
+</body>
+</html>

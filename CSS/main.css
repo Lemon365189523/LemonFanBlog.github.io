@@ -121,7 +121,7 @@ nav ul li.logo
  }
 
 /*内容*/
-h1
+.inner h1
 {
     padding: 12px;
     border-top: 2px solid #fff;
@@ -344,10 +344,10 @@ ul.share-group
 {
     overflow: hidden;
     background: #444 url(../Images/banner.jpg);
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center
+    background-attachment: fixed;  /*固定*/
+    background-repeat: no-repeat; /*不重复*/
+    background-size: cover;       /*填满*/
+    background-position: center   /*居中*/
 }
 
 /*mask*/

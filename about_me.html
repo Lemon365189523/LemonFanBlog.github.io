@@ -1,22 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>文章模板</title>
-	<meta charset="utf-8">
+    <title>了解我</title>
+    <meta charset="utf-8">
     <script src="JS/jQuery.js" type="text/javascript"></script>
     <script src="JS/main.js"></script>
     <!--常规化重置CSS 保留部分原有的样式-->
     <link rel="stylesheet" href="CSS/CSSReset.css">
     <link rel="stylesheet" href="CSS/main.css">
-    <!--markdown生成的代码-->
-    <link rel="stylesheet" href="CSS/markDown.css">
+    <link rel="stylesheet" href="CSS/about_me.css">
 
-    <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
-    <script src="JS/article.js"></script>
-    <link rel="stylesheet" href="CSS/article.css">
-    <link rel="stylesheet" href="/styles/default.css">
-    <script src="JS/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
 </head>
 <body>
 <div>
@@ -29,8 +22,26 @@
             <li id="sidebar_trigger"><a href="##" >侧栏菜单</a></li>
         </ul>
     </nav>
-</div>	
-<!-- 内容  -->
+</div>
+
+<!--头部-->
+
+<div class="about-header">
+    <header>
+        <div class="about-banner">
+            <div class="header-image">
+                <img src="Images/avatar.JPG" alt="">
+            </div>
+            <div class="self-introduction">
+                <p id="start_p">明明可以靠脸吃饭,偏要靠实力! </p>
+                <P>虽然不是科班出身,但我对编程的热情是切切实实.</P>
+                <p id="end_p">从自学Objective-C到Swift再到HTML5都是对编程的热爱,不断追求进步.</p>
+            </div>
+        </div>
+    </header>
+</div>
+
+
 
 <!--页脚-->
 <footer>
@@ -58,7 +69,7 @@
     </ul>
 </div>
 
-<button id="back-to-top">返回顶部</button>
+<!--<button id="back-to-top">返回顶部</button>-->
 
 </body>
 </html>

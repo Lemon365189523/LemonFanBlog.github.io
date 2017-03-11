@@ -11,7 +11,8 @@
         sidebar_trigger = $('#sidebar_trigger'),
         backButton = $('#back-to-top'),
         moreButton = $('#more_a'),
-        header = $('.main-wrapper header');
+        header = $('.main-wrapper header'),
+        aboutmeButton = $('#aboutme_button');
 
     // 显示侧边栏动画
     function showSideBar() {
@@ -54,5 +55,9 @@
         
     });
 
+    //跳转关于我
+    aboutmeButton.on('click', function(){
+        $(window).attr('location','about_me.html');
+    });
 
 })

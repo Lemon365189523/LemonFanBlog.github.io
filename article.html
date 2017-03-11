@@ -10,10 +10,14 @@
     <!--markdown生成的代码-->
     <link rel="stylesheet" href="CSS/markDown.css">
     <link rel="stylesheet" href="CSS/main.css">
-    
+
     <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
     <script src="JS/article.js"></script>
     <link rel="stylesheet" href="CSS/article.css">
+    <link rel="stylesheet" href="/styles/default.css">
+    <script src="JS/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
 </head>
 <body>
 <div>
@@ -103,7 +107,8 @@
         NSProxy是一个抽象父类定义一个API的对象充当其他对象或对象的替身。<br/>
         可以通过继承它，并重写这两个方法以实现消息转发到另一个实例</p>
 
-<pre><code>- (void)forwardInvocation:(NSInvocation *)anInvocation;
+<pre><code>
+    - (void)forwardInvocation:(NSInvocation *)anInvocation;
     - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel;
 </code></pre>
 
@@ -136,11 +141,11 @@
 
 <pre><code>@implementation LMAuditingInvoker
     -(void)preInvoke:(NSInvocation *)inv withTarget:(id)target{
-    NSLog(@&quot;执行方法前selector%@, object:%@&quot;,NSStringFromSelector([inv selector]),[target class]);
+        NSLog(@&quot;执行方法前selector%@, object:%@&quot;,NSStringFromSelector([inv selector]),[target class]);
     }
 
     -(void)postInvoke:(NSInvocation *)inv withTarget:(id)target{
-    NSLog(@&quot;执行方法后selector%@, object:%@&quot;,NSStringFromSelector([inv selector]),[target class]);
+        NSLog(@&quot;执行方法后selector%@, object:%@&quot;,NSStringFromSelector([inv selector]),[target class]);
     }
     @end
 </code></pre>
@@ -178,15 +183,15 @@
 <pre><code>@implementation LMAspcetProxy
 
     -(id)initWithObject:(id)object andInvoker:(id&lt;LMInvoker&gt;)ivoker{
-    return [self initWithObject:object selectors:nil andInvoker:ivoker];
+        return [self initWithObject:object selectors:nil andInvoker:ivoker];
     }
 
     -(id)initWithObject:(id)object selectors:(NSArray *)selectors andInvoker:(id&lt;LMInvoker&gt;)invoker{
-    _proxyTarget = object;
-    _invoker = invoker;
-    _selectors = [selectors mutableCopy];
+        _proxyTarget = object;
+        _invoker = invoker;
+        _selectors = [selectors mutableCopy];
 
-    return self;
+        return self;
     }
 
     /**
@@ -196,7 +201,7 @@
     @return 有效的方法签名
     */
     -(NSMethodSignature *)methodSignatureForSelector:(SEL)sel{
-    return [self.proxyTarget methodSignatureForSelector:sel];
+        return [self.proxyTarget methodSignatureForSelector:sel];
     }
 
     /**
@@ -206,38 +211,38 @@
     */
     -(void)forwardInvocation:(NSInvocation *)invocation{
     //在调用目标方法前执行横切功能
-    if ([self.invoker respondsToSelector:@selector(preInvoke:withTarget:)]) {
-    if (self.selectors != nil) {
-    SEL methodSel = [invocation selector];
-    for (NSValue *selValue in self.selectors) {
-    //判断该方法有没有注册 有的话调用，invoker对象调用协议方法
-    if (methodSel == [selValue pointerValue]) {
-    [self.invoker preInvoke:invocation withTarget:self.proxyTarget];
-    break;
-    }
-    }
-    }else{
-    [self.invoker preInvoke:invocation withTarget:self.proxyTarget];
-    }
-    }
+        if ([self.invoker respondsToSelector:@selector(preInvoke:withTarget:)]) {
+            if (self.selectors != nil) {
+                 SEL methodSel = [invocation selector];
+                 for (NSValue *selValue in self.selectors) {
+                    //判断该方法有没有注册 有的话调用，invoker对象调用协议方法
+                    if (methodSel == [selValue pointerValue]) {
+                        [self.invoker preInvoke:invocation withTarget:self.proxyTarget];
+                        break;
+                    }
+                }
+             }else{
+                [self.invoker preInvoke:invocation withTarget:self.proxyTarget];
+             }
+        }
 
-    //调用目标方法 LMClass对像调用自己的方法
-    [invocation invokeWithTarget:self.proxyTarget];
+        //调用目标方法 LMClass对像调用自己的方法
+        [invocation invokeWithTarget:self.proxyTarget];
 
-    //在调用目标方法后执行横切功能
-    if ([self.invoker respondsToSelector:@selector(postInvoke:withTarget:)]) {
-    if (self.selectors != nil) {
-    SEL methodSel = [invocation selector];
-    for (NSValue *selValue in self.selectors) {
-    if (methodSel == [selValue pointerValue]) {
-    [self.invoker postInvoke:invocation withTarget:self.proxyTarget];
-    break;
-    }
-    }
-    }else{
-    [self.invoker postInvoke:invocation withTarget:self.proxyTarget];
-    }
-    }
+        //在调用目标方法后执行横切功能
+        if ([self.invoker respondsToSelector:@selector(postInvoke:withTarget:)]) {
+            if (self.selectors != nil) {
+                 SEL methodSel = [invocation selector];
+                for (NSValue *selValue in self.selectors) {
+                    if (methodSel == [selValue pointerValue]) {
+                        [self.invoker postInvoke:invocation withTarget:self.proxyTarget];
+                         break;
+                    }
+                }
+            }else{
+                [self.invoker postInvoke:invocation withTarget:self.proxyTarget];
+            }
+        }
     }
 
     -(void)registerSelector:(SEL)selector{
@@ -284,7 +289,7 @@
         <li>item5</li>
     </ul>
     <div class="copy">
-        &copy 范伟健
+        &copy 2017 Lemon
     </div>
 </footer>
 <!--遮盖-->
