@@ -12,7 +12,8 @@
         backButton = $('#back-to-top'),
         moreButton = $('#more_a'),
         header = $('.main-wrapper header'),
-        aboutmeButton = $('#aboutme_button');
+        aboutmeButton = $('#aboutme_button'),
+        share_qq = $('#share_qq');
 
     // 显示侧边栏动画
     function showSideBar() {
@@ -60,4 +61,12 @@
         $(window).attr('location','about_me.html');
     });
 
+
+    share_qq.on('click',function(){
+        alert('我的QQ号:365189523,可以一起交流');
+    })
+
 })
+
+
+
