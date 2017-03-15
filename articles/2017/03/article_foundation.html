@@ -3,29 +3,29 @@
 <head>
     <title>Foundation框架中常用类</title>
     <meta charset="utf-8">
-    <script src="../JS/jQuery.js" type="text/javascript"></script>
-    <script src="../JS/main.js"></script>
+    <script src="../../../JS/jQuery.js" type="text/javascript"></script>
+    <script src="../../../JS/main.js"></script>
     <!--常规化重置CSS 保留部分原有的样式-->
-    <link rel="stylesheet" href="../CSS/CSSReset.css">
-    <link rel="stylesheet" href="../CSS/main.css">
+    <link rel="stylesheet" href="../../../CSS/CSSReset.css">
+    <link rel="stylesheet" href="../../../CSS/main.css">
     <!--markdown生成的代码-->
-    <link rel="stylesheet" href="../CSS/markDown.css">
+    <link rel="stylesheet" href="../../../CSS/markDown.css">
 
     <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
-    <script src="../JS/article.js"></script>
-    <link rel="stylesheet" href="../CSS/article.css">
+    <script src="../../../JS/article.js"></script>
+    <link rel="stylesheet" href="/CSS/article.css">
     <link rel="stylesheet" href="/styles/default.css">
-    <script src="../JS/highlight.pack.js"></script>
+    <script src="/JS/highlight.pack.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <link rel="shortcut icon" href="../Images/bitbug_favicon.ico" />
+    <link rel="shortcut icon" href="../../../Images/bitbug_favicon.ico" />
 </head>
 <body>
 <div>
     <nav id="nav">
         <div class="logo"><a href=""></a></div>
         <ul>
-            <li><a href="../index.html">首页</a></li>
-            <li><a href="../about_me.html" >About</a></li>
+            <li><a href="../../../index.html">首页</a></li>
+            <li><a href="../../../about_me.html" >About</a></li>
             <li id="sidebar_trigger"><a href="##" >侧栏菜单</a></li>
         </ul>
     </nav>
@@ -64,10 +64,11 @@
         description类方法，显示类名。<br/>
         debugDescription实例方法，返回对象的调试信息</p>
 
-<pre><code>NSArray *array = [NSArray array];
-    NSString *str1 = [array description];
-    NSString *str2 = [NSArray description];
-    NSString *str3 = [array debugDescription];
+<pre><code>
+        NSArray *array = [NSArray array];
+        NSString *str1 = [array description];
+        NSString *str2 = [NSArray description];
+        NSString *str3 = [array debugDescription];
 </code></pre>
 
     <p>NSObject协议还声明isEqual：，hash等方法</p>
@@ -93,10 +94,11 @@
 
     <p>类方法initialize用于加载类之后初次使用该类前初始化这个。为了避免该方法被调用两次的情况（除了被目标类调用外又被父类调用），应使用验证调用者为目标类。</p>
 
-<pre><code>+(void)initialize{
-    if (self = [MyClass class]){
-    //初始化该类的逻辑
-    }
+<pre><code>
+    +(void)initialize{
+        if (self = [MyClass class]){
+        //初始化该类的逻辑
+        }
     }
 </code></pre>
 
@@ -136,7 +138,8 @@
 
     <p>NSValue类是一个单数据项容器。它可以容纳固定长度的C语言数据类型和OBjective-C数据类型。</p>
 
-<pre><code>int ten = 10;
+<pre><code>
+    int ten = 10;
     int *tenPtr = &amp;ten;
     NSValue *myInt = [NSValue value:&amp;tenPtr withObjCType:@encode(int *)];
     int result = *(int *) [myInt pointerValue];
@@ -154,7 +157,8 @@
 
     <p>NSCalendar,NSDate,NSCalendarDate,NSDateComponents和NSTimeZone类，提供了日期和时间的编程和格式支持。</p>
 
-<pre><code>NSDate *now = [[NSDate alloc] init];
+<pre><code>
+    NSDate *now = [[NSDate alloc] init];
     NSTimeInterval secondsPerDay = 24*60*60;
     NSDate *tomorrow = [now dateByAddingTimeInterval:secondsPerDay];
     //compare 比较时间 返回一个升降序的枚举
@@ -169,7 +173,8 @@
     <p>NSCache类提供了一块内存系统缓存、用于临时存储对象。<br/>
         NSCache还提供管理缓存大小，丢弃对象和缓存协议，提供自动移除策略</p>
 
-<pre><code>NSCache *cache = [[NSCache alloc] init];
+<pre><code>
+    NSCache *cache = [[NSCache alloc] init];
     //设置缓存策略 限制大小
     [cache setCountLimit:5];
     [cache setObject:@&quot;hello world&quot; forKey:@&quot;greeting&quot;];
@@ -203,7 +208,8 @@
 
     <p>NSCountedSet类可以管理可变集合，它允许重复添加对象。每个对象都有一个相关计数，NSCountedSet对象会记录每个对象被插入集合的次数和删除该对象所需要的相同删除次数。</p>
 
-<pre><code>NSCountedSet *set = [NSCountedSet setWithObjects:@(1),@(2),@(2),@(3) ,nil];
+<pre><code>
+    NSCountedSet *set = [NSCountedSet setWithObjects:@(1),@(2),@(2),@(3) ,nil];
     NSLog(@&quot;set-&gt;%@&quot;,set);
     [set removeObject:@(2)];
     NSLog(@&quot;set-&gt;%@&quot;,set);
@@ -232,7 +238,8 @@
         方式解析XML文档。NSXMLParser实例是通过代理配置的，所有的解析等特定方法都在代理方法调用，例如开始与结束解析文档过程、处理XML元素和特性等时间点..。<br/>
         必须准守NSXMLParserDelegate协议。</p>
 
-<pre><code>NSString *bundle = [[NSBundle mainBundle] pathForResource:@&quot;Info&quot; ofType:@&quot;plist&quot;];
+<pre><code>
+    NSString *bundle = [[NSBundle mainBundle] pathForResource:@&quot;Info&quot; ofType:@&quot;plist&quot;];
     NSURL *url = [NSURL fileURLWithPath:bundle];
     NSXMLParser *parser = [[NSXMLParser alloc] initWithContentsOfURL:url];
     [parser setDelegate:self];
@@ -246,7 +253,8 @@
         可使用谓词设置搜索条件，也可以使用谓词过滤返回结果。<br/>
         NSExpression类用于在谓词中代表表达式，而且它支持多种表达类型。NSPredicate、NSComparisonPredicate和NSCompoundPredicate类用于创建谓词。</p>
 
-<pre><code>NSArray *nArray = @[@(1),@(2),@(3)];
+<pre><code>
+    NSArray *nArray = @[@(1),@(2),@(3)];
     NSPredicate *pred = [NSPredicate predicateWithFormat:@&quot;SELF &gt; 1&quot;];
     NSArray *fileterdArray = [nArray filteredArrayUsingPredicate:pred];
     NSLog(@&quot;fileter:%@&quot;,fileterdArray);
@@ -256,9 +264,9 @@
 <!--页脚-->
 <footer>
     <ul class="share-group">
-        <li><a href="https://github.com/lemon365189523" target="_blank"><img src="../Images/github.png" ></a></li>
-        <li><a href="http://weibo.com/u/1936474822?is_all=1" target="_blank"><img src="../Images/sina.png" ></a></li>
-        <li><a href="javascript:void(0);"  id="share_qq"><img src="../Images/QQ.png" ></a></li>
+        <li><a href="https://github.com/lemon365189523" target="_blank"><img src="../../../Images/github.png" ></a></li>
+        <li><a href="http://weibo.com/u/1936474822?is_all=1" target="_blank"><img src="../../../Images/sina.png" ></a></li>
+        <li><a href="javascript:void(0);"  id="share_qq"><img src="../../../Images/QQ.png" ></a></li>
     </ul>
     <div class="copy">
         &copy 2017 Lemon

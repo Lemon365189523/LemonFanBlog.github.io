@@ -263,6 +263,12 @@ p
     left: 50px;
 }
 
+.text-section .article-title
+{
+    text-decoration: none;
+    color: black;
+}
+
 .text-section h2
 {
     margin-bottom: 20px;
@@ -310,6 +316,12 @@ p
     display: inline-block;
     color: #1abc9c;
     padding: 4px 15px;
+}
+
+.line
+{
+    padding: 10px;
+    background-color: white;
 }
 
 /*>>>>>>>>>>>>>>>页脚>>>>>>>>>>>>>>>>>>>>>>>>*/

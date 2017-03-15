@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>块的理解和使用</title>
+    <meta charset="utf-8">
+    <script src="../../../JS/jQuery.js" type="text/javascript"></script>
+    <script src="../../../JS/main.js"></script>
+    <!--常规化重置CSS 保留部分原有的样式-->
+    <link rel="stylesheet" href="../../../CSS/CSSReset.css">
+    <link rel="stylesheet" href="../../../CSS/main.css">
+    <!--markdown生成的代码-->
+    <link rel="stylesheet" href="../../../CSS/markDown.css">
+
+    <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
+    <script src="../../../JS/article.js"></script>
+    <link rel="stylesheet" href="../../../CSS/article.css">
+    <link rel="stylesheet" href="/styles/default.css">
+    <script src="../../../JS/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="shortcut icon" href="../../../Images/bitbug_favicon.ico" />
+</head>
+<body>
+<div>
+    <nav id="nav">
+        <div class="logo"><a href=""></a></div>
+        <ul>
+            <li><a href="../../../index.html" >首页</a></li>
+            <li><a href="../../../about_me.html" >About</a></li>
+            <li id="sidebar_trigger"><a href="##" >侧栏菜单</a></li>
+        </ul>
+    </nav>
+</div>
+<!-- 内容  -->
+<div class="markdown-body">
+    <h1 id="toc_0">块的理解和使用</h1>
+
+    <h2 id="toc_1">1.块的语法</h2>
+
+    <p>通过支持块的语法功能可以声明块类型的变量和常量。<br/>
+        声明块类型的语法<br/>
+        <img src="../../../Images/block语法.png" alt="屏幕快照"/>￼</p>
+
+<pre><code>//声明一个有返回值为int 有一个参的block
+    int (^oneParamBlock)(int );
+    //声明一个没有返回值为int 有两个参的block
+    void (^twoParamBlock)(int , int);
+    //声明一个有返回值为int 没有参的block
+    int (^noParamBlocl)();
+
+</code></pre>
+
+    <p>因为可将变量设置为类型，所以快变量也可以被用作函数的方法的参数。通常可以通过创建类型定义为块类型提供别名。（typedef）</p>
+
+    <h2 id="toc_2">2.块常量的使用</h2>
+
+<pre><code>//声明一个block
+    typedef int (^AdderBlock)(int);
+    //创建一个参数为block的方法
+    -(int)block:(AdderBlock) block{
+    int a = 0;
+    if (block) {
+    a = block(4);
+    }
+    return a;
+    }
+</code></pre>
+
+<pre><code>//方法调用
+    int value = [self block:^int(int a) {
+    int b = a + 4;
+    return b;
+    }];
+
+    NSLog(@&quot;%d&quot;,value);//value = 8
+</code></pre>
+
+    <p>可以使用一条语句定义并调用块表达式。注意，块表达式是匿名的，因此调用操作符会接受带有符合块表达式的参数列表的匿名函数</p>
+
+<pre><code>//没有返回值 匿名block
+    ^(NSString *user){
+    NSLog(@&quot;%@&quot;,user);
+    }(@&quot;Lemon&quot;);
+
+</code></pre>
+
+    <h2 id="toc_3">3.可修改的__block变量</h2>
+
+    <p>默认情况下，在块常量表达式中通过词汇范围访问的块局部变量不能修改。使用存储类型修改符<code>__block</code>可以将这些变量切换为读写模式。</p>
+
+<pre><code>__block int myValue = 10;
+    void(^intBlock)(int) = ^(int amout){
+    myValue += amout;
+    NSLog(@&quot;新值：%d&quot;,myValue);
+    };
+    intBlock(5);
+</code></pre>
+
+    <p>当引用变量的块被复制到堆存储区域时，使用__block修改符的变量也会被复制到堆存储区域。</p>
+
+    <h2 id="toc_4">4.块的内存管理</h2>
+
+    <p>在运行程序时，块常量表达式会或的栈内存，因而会拥有与局部变量相同的生命周期。因此，它们必须被复制到永久存储区域（即堆）中，才能在定义它们的范围之外使用。</p>
+
+<pre><code>void (^greetingBlock)(void);
+    {//范围的起点，将局部变量压入栈中
+    greetingBlock = ^{
+    NSLog(@&quot;Hello World!&quot;);
+    }
+    }//范围的终点，从栈中弹出变量（即块常量）
+    greetingBlock();//调用这个块可能会使程序崩溃！
+</code></pre>
+
+    <p>Objective-C为块常量的内存管理提供了复制（Block_copy()）和释放（Block_release()）命令。</p>
+
+</div>
+<!--页脚-->
+<footer>
+    <ul class="share-group">
+        <li><a href="https://github.com/lemon365189523" target="_blank"><img src="../../../Images/github.png" ></a></li>
+        <li><a href="http://weibo.com/u/1936474822?is_all=1" target="_blank"><img src="../../../Images/sina.png" ></a></li>
+        <li><a href="javascript:void(0);"  id="share_qq"><img src="../../../Images/QQ.png" ></a></li>
+    </ul>
+    <div class="copy">
+        &copy 2017 Lemon
+    </div>
+</footer>
+<!--遮盖-->
+<div class="mask"></div>
+<!--侧边栏-->
+<div id="sidebar">
+    <ul>
+        <li><a href="">item1</a></li>
+        <li><a href="">item2</a></li>
+        <li><a href="">item3</a></li>
+        <li><a href="">item4</a></li>
+        <li><a href="">item5</a></li>
+    </ul>
+</div>
+
+<button id="back-to-top">返回顶部</button>
+
+</body>
+</html>
