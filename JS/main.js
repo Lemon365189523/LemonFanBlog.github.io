@@ -51,7 +51,7 @@
     //更多按钮 滑动
     moreButton.on('click',  function(event) {
         $('html, body').animate({
-            scrollTop: header.height(),
+            scrollTop: header.height() -50 ,
             },400);
         
     });
