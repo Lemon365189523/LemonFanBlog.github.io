@@ -269,6 +269,10 @@ p
     color: black;
 }
 
+.article-title:hover{
+    color: #1abc9c;
+}
+
 .text-section h2
 {
     margin-bottom: 20px;

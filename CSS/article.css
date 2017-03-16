@@ -22,6 +22,11 @@ a:visited
     color: #ffffff;
 }
 
+.sidebar_trigger:visited
+{
+    color: #fff;
+}
+
 nav ul li a, .logo a
 {
     line-height: 50px;
