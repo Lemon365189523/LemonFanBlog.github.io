@@ -75,7 +75,7 @@
     </blockquote>
 
     <p>Signal获取到数据后，会调用Subscriber的sendNext, sendComplete, sendError方法来传送数据给Subscriber，Subscriber自然也有方法来获取传过来的数据，如：[signal subscribeNext:error:completed]。这样只要没有sendComplete和sendError，新的值就会通过sendNext源源不断地传送过来。</p>
-
+    <p>当一个signal被一个subscriber subscribe后，这个subscriber何时会被移除？答案是当subscriber被sendComplete或sendError时，或者手动调用[disposable dispose]。</p>
     <h2 id="toc_3">下面用代码介绍RAC的基本使用和注意事项</h2>
 
     <p><strong>RAC的信号分为冷信号和热信号</strong><br/>

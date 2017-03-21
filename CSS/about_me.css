@@ -65,7 +65,7 @@
     overflow: hidden;
 }
 
-#project-left
+.project-left
 {
     min-height: 300px;
     float: left;
@@ -73,7 +73,7 @@
     padding-top: 10px;
 }
 
-#project-right
+.project-right
 {
     min-height: 300px;
     float: right;
