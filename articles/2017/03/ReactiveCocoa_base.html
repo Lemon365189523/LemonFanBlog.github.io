@@ -84,19 +84,20 @@
 
     <p><strong>信号的基本创建和订阅</strong></p>
 
-<pre><code>RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-    [subscriber sendNext:@&quot;qwqw&quot;];
-    //遇到sendError或sendComplete 就结束发送信号
-    //[subscriber sendError:nil];
-    [subscriber sendCompleted];
+<pre><code>
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+        [subscriber sendNext:@&quot;qwqw&quot;];
+        //遇到sendError或sendComplete 就结束发送信号
+        //[subscriber sendError:nil];
+        [subscriber sendCompleted];
 
-    return [RACDisposable disposableWithBlock:^{
-    NSLog(@&quot;这里是信号结束后需要操作什么，可以return nil&quot;);
-    }];
+        return [RACDisposable disposableWithBlock:^{
+            NSLog(@&quot;这里是信号结束后需要操作什么，可以return nil&quot;);
+        }];
     }];
     //激活冷信号
     [signal subscribeNext:^(id x) {
-    NSLog(@&quot;%@&quot;,x);
+        NSLog(@&quot;%@&quot;,x);
     }];
 </code></pre>
 
@@ -112,13 +113,14 @@
 
     <p>这时我们在后续操作的subscriNext的signal已经不是原来的signal了,而是didsubscribeBlock为空的signal,所以不管后面有多少次subscribNext都不会让createBlock重复执行。</p>
 
-<pre><code>RACMulticastConnection *connection = [signal multicast:[RACReplaySubject subject]];
+<pre><code>
+    RACMulticastConnection *connection = [signal multicast:[RACReplaySubject subject]];
     [connection connect];
     [connection.signal subscribeNext:^(id x) {
-    NSLog(@&quot;one -&gt; %@&quot;,x);
+        NSLog(@&quot;one -&gt; %@&quot;,x);
     }];
     [connection.signal subscribeNext:^(id x) {
-    NSLog(@&quot;two -&gt; %@&quot;,x);
+        NSLog(@&quot;two -&gt; %@&quot;,x);
     }];
 
 </code></pre>
@@ -137,15 +139,16 @@
     <p><code>RACSubject</code>:信号提供者，自己可以充当信号，又能发送信号。<br/>
         <code>RacSubject</code>创建成功就处于热状态 可发送可接受.对<code>RACSubject</code>对象的每次subscription，都是将这个subscriber加到subscribers数组中，并没有调用 didSubScirbe（）</p>
 
-<pre><code>//RACSubject 要提前订阅再发送信号  RACSubject是一对多的
+<pre><code>
+    //RACSubject 要提前订阅再发送信号  RACSubject是一对多的
     RACSubject *subject = [RACSubject subject];
 
     [subject subscribeNext:^(id x) {
-    NSLog(@&quot;subject -&gt; %@&quot;,x);
+        NSLog(@&quot;subject -&gt; %@&quot;,x);
     }];
 
     [subject subscribeNext:^(id x) {
-    NSLog(@&quot;subject2 -&gt; %@&quot;,x);
+        NSLog(@&quot;subject2 -&gt; %@&quot;,x);
     }];
 
     [subject sendNext:@(123456)];
@@ -156,11 +159,12 @@
 
     <p>使用时需要注意循环引用，@weakify(self) / @strongify(self) 组合解除循环引用；</p>
 
-<pre><code>@weakify(self)
+<pre><code>
+    @weakify(self)
     [[self.loginButton rac_signalForControlEvents:UIControlEventTouchUpInside]
     subscribeNext:^(id x) {
-    @strongify(self)
-    [self.viewModel.loginCommand execute:nil];
+        @strongify(self)
+        [self.viewModel.loginCommand execute:nil];
     }];
 
 </code></pre>
@@ -171,31 +175,35 @@
 
     <p>1.例如target-action，UIControl的addTaget方法。</p>
 
-<pre><code>[[self.loginBtn rac_signalForControlEvents:UIControlEventTouchUpInside] subscribeNext:^(UIButton *button) {
-    NSLog(@&quot;登录按钮被点击&quot;);
+<pre><code>
+    [[self.loginBtn rac_signalForControlEvents:UIControlEventTouchUpInside] subscribeNext:^(UIButton *button) {
+        NSLog(@&quot;登录按钮被点击&quot;);
     }];
 </code></pre>
 
     <p>2.通知</p>
 
-<pre><code>[[[NSNotificationCenter defaultCenter] rac_addObserverForName:@&quot;kClickButton&quot; object:nil] subscribeNext:^(NSNotification *notification) {
-    //收到通知
-    NSLog(@&quot;收到通知&quot;);
+<pre><code>
+    [[[NSNotificationCenter defaultCenter] rac_addObserverForName:@&quot;kClickButton&quot; object:nil] subscribeNext:^(NSNotification *notification) {
+        //收到通知
+        NSLog(@&quot;收到通知&quot;);
     }];
 </code></pre>
 
     <p>3.KVO</p>
 
-<pre><code>[RACObserve(self.loginBtn, highlighted) subscribeNext:^(id x) {
-    NSLog(@&quot;loginBtn.Highlighted-&gt;%@&quot;,x);
+<pre><code>
+    [RACObserve(self.loginBtn, highlighted) subscribeNext:^(id x) {
+        NSLog(@&quot;loginBtn.Highlighted-&gt;%@&quot;,x);
     }];
 
 </code></pre>
 
     <p>4.RAC也把基本控件都封装了，方便开发者使用。</p>
 
-<pre><code>[self.userIdTF.rac_textSignal subscribeNext:^(id x) {
-    NSLog(@&quot;%@&quot;,x);
+<pre><code>
+    [self.userIdTF.rac_textSignal subscribeNext:^(id x) {
+        NSLog(@&quot;%@&quot;,x);
     }];
 
 </code></pre>
@@ -206,8 +214,9 @@
 
     <p>RAC宏允许直接把信号的输出应用到对象的属性上。RAC宏有两个参数，第一个是需要设置属性值的对象，第二个是属性名。每次信号产生一个next事件，传递过来的值都会应用到该属性上。</p>
 
-<pre><code>RAC( self.userPWTF, backgroundColor) = [validPasswordSignal map:^id(NSNumber *value) {
-    return [value boolValue] ? [UIColor clearColor] : [UIColor redColor];
+<pre><code>
+    RAC( self.userPWTF, backgroundColor) = [validPasswordSignal map:^id(NSNumber *value) {
+        return [value boolValue] ? [UIColor clearColor] : [UIColor redColor];
     }];
 </code></pre>
 
@@ -216,8 +225,9 @@
     <p>command的初始化方法中有一个enabledSignal参数，这个signal就是用来指明command能否被执行的。<br/>
         signalBlock参数在command需要执行时调用，这个block需要返回一个signal用来表示正在执行，之前将allowsConcurrentExecute的值设置为默认值NO，此时command会观察这个signal，而且在这个执行进度完成前，不允许新的执行。如果你需要手动执行command，可以发送消息：-[RACCommand execute:()]</p>
 
-<pre><code>RACCommand *btnCommand = [[RACCommand alloc] initWithEnabled:validUserNameSignal signalBlock:^RACSignal *(id input) {
-    return [self loginSignal];
+<pre><code>
+    RACCommand *btnCommand = [[RACCommand alloc] initWithEnabled:validUserNameSignal signalBlock:^RACSignal *(id input) {
+        return [self loginSignal];
     }];
 </code></pre>
 
@@ -225,36 +235,37 @@
 
     <p>，可以简单看做是RAC世界的NSArray，RAC增加了-rac_sequence方法，可以使诸如NSArray这些集合类（collection classes）直接转换为RACSequence来使用.</p>
 
-<pre><code>NSArray *arr = @[@1,@2,@3,@4,@5,@6];
+<pre><code>
+    NSArray *arr = @[@1,@2,@3,@4,@5,@6];
     [arr.rac_sequence.signal subscribeNext:^(id x) {
-    //NSLog(@&quot;x:%@&quot;,x);
+        //NSLog(@&quot;x:%@&quot;,x);
     }];
 
     NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:@&quot;jtd&quot;,@&quot;name&quot;,@&quot;man&quot;,@&quot;sex&quot;,@&quot;jx&quot;,@&quot;jg&quot;, nil];
     [dict.rac_sequence.signal subscribeNext:^(id x) {
-    RACTupleUnpack(NSString *key,NSString *value) = x;
-    NSLog(@&quot;key:%@,value:%@&quot;,key,value);
-    //NSLog(@&quot;%@&quot;,x);
+        RACTupleUnpack(NSString *key,NSString *value) = x;
+        NSLog(@&quot;key:%@,value:%@&quot;,key,value);
+        //NSLog(@&quot;%@&quot;,x);
     }];
 </code></pre>
 
     <h2 id="toc_10">RACScheduler 调度器 控制线程</h2>
 
-<pre><code>//RACScheduler 调度器 控制线程
+<pre><code>
+    //RACScheduler 调度器 控制线程
     //startEagerlyWithScheduler  Eagerly立即 Lazily稍后
     //schedulerWithPriority 指定等级的异步并发队列
     //信号传递到那个线程deliverOn -&gt; mainThreadScheduler(主线程)  currentScheduler(当前线程)
     RAC(self.avatarIV,image) = [[RACSignal startEagerlyWithScheduler:[RACScheduler schedulerWithPriority:RACSchedulerPriorityBackground] block:^(id&lt;RACSubscriber&gt; subscriber) {
-    NSError *error;
-    NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:@&quot;http://ww3.sinaimg.cn/bmiddle/7128be06jw1ei4hfthoj3j20hs0bomyd.jpg&quot;]
-    options:NSDataReadingMappedAlways
-    error:&amp;error];
-    if(error) {
-    [subscriber sendError:error];
-    }else{
-    [subscriber sendNext:[UIImage imageWithData:data]];
-    [subscriber sendCompleted];
-    }
+        NSError *error;
+        NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:@&quot;http://ww3.sinaimg.cn/bmiddle/7128be06jw1ei4hfthoj3j20hs0bomyd.jpg&quot;]
+    options:NSDataReadingMappedAlways error:&amp;error];
+        if(error) {
+            [subscriber sendError:error];
+        }else{
+            [subscriber sendNext:[UIImage imageWithData:data]];
+            [subscriber sendCompleted];
+        }
     }] deliverOn:[RACScheduler mainThreadScheduler]];
 </code></pre>
 
@@ -265,10 +276,11 @@
 
     <p><strong>1.filter过滤</strong></p>
 
-<pre><code>[[self.userIdTF.rac_textSignal filter:^BOOL(NSString *value) {
-    return value.length &gt; 4;//大于4才开启管道 YES开启 NO关闭
+<pre><code>
+    [[self.userIdTF.rac_textSignal filter:^BOOL(NSString *value) {
+        return value.length &gt; 4;//大于4才开启管道 YES开启 NO关闭
     }] subscribeNext:^(id x) {
-    NSLog(@&quot;%@&quot;,x);
+        NSLog(@&quot;%@&quot;,x);
     }];
 
 </code></pre>
@@ -276,43 +288,46 @@
     <p><strong>2.map转换</strong><br/>
         新加的map操作通过block改变了事件的数据。map从上一个next事件接收数据，通过执行block把返回值传给下一个next事件。在上面的代码中，map以NSString为输入，取字符串的长度，返回一个NSNumber。</p>
 
-<pre><code>[[[self.userIdTF.rac_textSignal map:^id(NSString *text) {
-    return @(text.length);//返回对象类型 改变的对象类型
+<pre><code>
+    [[[self.userIdTF.rac_textSignal map:^id(NSString *text) {
+        return @(text.length);//返回对象类型 改变的对象类型
     }] filter:^BOOL(NSNumber *value) {
-    return [value integerValue] &gt; 3;
+        return [value integerValue] &gt; 3;
     } ] subscribeNext:^(id x) {
-    NSLog(@&quot;%@&quot;,x);
+        NSLog(@&quot;%@&quot;,x);
     }];
 </code></pre>
 
     <p><strong>3.concat:按一定顺序拼接信号</strong><br/>
         当多个信号发出的时候，有顺序的接收信号。</p>
 
-<pre><code>RACSequence *letters = [@&quot;A B C D E F G H I&quot; componentsSeparatedByString:@&quot; &quot;].rac_sequence;
+<pre><code>
+    RACSequence *letters = [@&quot;A B C D E F G H I&quot; componentsSeparatedByString:@&quot; &quot;].rac_sequence;
     RACSequence *numbers = [@&quot;1 2 3 4 5 6 7 8 9&quot; componentsSeparatedByString:@&quot; &quot;].rac_sequence;
     // Contains: A B C D E F G H I 1 2 3 4 5 6 7 8 9
     RACSequence *concatenated = [letters concat:numbers];
     [concatenated.signal subscribeNext:^(id x) {
-    // 注意：第一个信号必须发送完成，第二个信号才会被激活
-    //NSLog(@&quot;concatenated - &gt;%@&quot;,x);
+        // 注意：第一个信号必须发送完成，第二个信号才会被激活
+        //NSLog(@&quot;concatenated - &gt;%@&quot;,x);
     }];
 </code></pre>
 
     <p><strong>4.flatten (合并)</strong><br/>
         switchToLatest 的原理是当有新的signal来的时候，就dispose老的signal，订阅新的signal，而 flatten 不会 dispose 老的 signal</p>
 
-<pre><code>RACSubject *oneSubject = [RACSubject subject];
+<pre><code>
+    RACSubject *oneSubject = [RACSubject subject];
     RACSubject *twoSubject = [RACSubject subject];
     RACSignal *signalOfSignals = [RACSignal createSignal:^ RACDisposable * (id&lt;RACSubscriber&gt; subscriber) {
-    [subscriber sendNext:oneSubject];
-    [subscriber sendNext:twoSubject];
-    [subscriber sendCompleted];
-    return nil;
+        [subscriber sendNext:oneSubject];
+        [subscriber sendNext:twoSubject];
+        [subscriber sendCompleted];
+        return nil;
     }];
     RACSignal *flattened = [signalOfSignals flatten];
     // Outputs: A 1 B C 2
     [flattened subscribeNext:^(NSString *x) {
-    //NSLog(@&quot;%@&quot;, x);
+        //NSLog(@&quot;%@&quot;, x);
     }];
     [oneSubject sendNext:@&quot;A&quot;];
     [twoSubject sendNext:@&quot;1&quot;];
@@ -324,14 +339,15 @@
     <p><strong>5.flattenMap 把源信号的内容映射成一个新的信号，信号可以是任意类型</strong><br/>
         开发中，如果信号发出的值不是信号，映射一般使用Map。如果信号发出的值是信号，映射一般使用FlatternMap。Map底层其实是调用flatternMap,Map中block中的返回的值会作为flatternMap中block中的值。</p>
 
-<pre><code>//把textfield的输入操作转换成另一种输出[NSString stringWithFormat:@&quot;输出:%@&quot;,value]的信号
+<pre><code>
+    //把textfield的输入操作转换成另一种输出[NSString stringWithFormat:@&quot;输出:%@&quot;,value]的信号
     [[self.userPWTF.rac_textSignal flattenMap:^RACStream *(id value) {
-    return [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-    [subscriber sendNext:[NSString stringWithFormat:@&quot;输出:%@&quot;,value]];
-    return nil;
-    }];
+        return [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+            [subscriber sendNext:[NSString stringWithFormat:@&quot;输出:%@&quot;,value]];
+        return nil;
+        }];
     }] subscribeNext:^(id x) {
-    NSLog(@&quot;flattenMap - &gt;%@&quot;,x);
+        NSLog(@&quot;flattenMap - &gt;%@&quot;,x);
     }];
 </code></pre>
 
@@ -340,7 +356,7 @@
 <pre><code>//
     [[RACSignal merge:@[self.userIdTF.rac_textSignal,self.userPWTF.rac_textSignal]] subscribeNext:^(id x) {
 
-    NSLog(@&quot;merge - &gt;%@&quot;,x);
+        NSLog(@&quot;merge - &gt;%@&quot;,x);
     }];
 </code></pre>
 
@@ -349,7 +365,8 @@
 
     <p><strong>8.switchToLatest(选择最新的信号)</strong></p>
 
-<pre><code>//
+<pre><code>
+    //
     RACSubject *switchSignal = [RACSubject subject];
     RACSubject *signalA = [RACSubject subject];
     RACSubject *signalB = [RACSubject subject];
@@ -359,7 +376,7 @@
     // 注意switchToLatest：只能用于信号中的信号
     [signalOfSignals.switchToLatest subscribeNext:^(id x) {
 
-    NSLog(@&quot;switchToLatest-&gt; %@&quot;,x);
+        NSLog(@&quot;switchToLatest-&gt; %@&quot;,x);
     }];
     [switchSignal sendNext:signalA];
     [switchSignal sendNext:signalB];
@@ -370,99 +387,108 @@
     <p><strong>9.ignore(忽略)</strong><br/>
         忽略给定的值，注意，这里忽略的既可以是地址相同的对象，也可以是- isEqual:结果相同的值，也就是说自己写的Model对象可以通过重写- isEqual:方法来使- ignore:生效。常用的值的判断没有问题，</p>
 
-<pre><code>[[self.userIdTF.rac_textSignal ignore:@&quot;sunny&quot;] subscribeNext:^(NSString *value) {
-    NSLog(@&quot;`sunny` could never appear : %@&quot;, value);
+<pre><code>
+    [[self.userIdTF.rac_textSignal ignore:@&quot;sunny&quot;] subscribeNext:^(NSString *value) {
+        NSLog(@&quot;`sunny` could never appear : %@&quot;, value);
     }];
 </code></pre>
 
     <p><strong>10 take(取)</strong><br/>
         从开始一共取N次的next值，不包括Competion和Error</p>
 
-<pre><code>[[[RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-    [subscriber sendNext:@&quot;1&quot;];
-    [subscriber sendNext:@&quot;2&quot;];
-    [subscriber sendNext:@&quot;3&quot;];
-    [subscriber sendCompleted];
-    return nil;
+<pre><code>
+    [[[RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+        [subscriber sendNext:@&quot;1&quot;];
+        [subscriber sendNext:@&quot;2&quot;];
+        [subscriber sendNext:@&quot;3&quot;];
+        [subscriber sendCompleted];
+        return nil;
     }] take:2] subscribeNext:^(id x) {
-    NSLog(@&quot;only 1 and 2 will be print: %@&quot;, x);
+        NSLog(@&quot;only 1 and 2 will be print: %@&quot;, x);
     }];
 </code></pre>
 
     <p><strong>11  takeUntil(取值，直到某刻结束)</strong><br/>
         当给定的signal完成前一直取值。</p>
 
-<pre><code>[self.userIdTF.rac_textSignal takeUntil:self.rac_willDeallocSignal];
+<pre><code>
+    [self.userIdTF.rac_textSignal takeUntil:self.rac_willDeallocSignal];
 </code></pre>
 
     <p><strong>12.takeUntilBlock(对于每个next值，运行block，当block返回YES时停止取值)</strong></p>
 
-<pre><code>[[self.userIdTF.rac_textSignal takeUntilBlock:^BOOL(NSString *value) {
-    return [value isEqualToString:@&quot;stop&quot;];
+<pre><code>
+    [[self.userIdTF.rac_textSignal takeUntilBlock:^BOOL(NSString *value) {
+        return [value isEqualToString:@&quot;stop&quot;];
     }] subscribeNext:^(NSString *value) {
-    NSLog(@&quot;current value is not `stop`: %@&quot;, value);
+        NSLog(@&quot;current value is not `stop`: %@&quot;, value);
     }];
 </code></pre>
 
     <p><strong>13then:用于连接两个信号</strong><br/>
         当第一个信号完成，才会连接then返回的信号</p>
 
-<pre><code>//
+<pre><code>
+    //
     [[[RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
 
-    [subscriber sendNext:@1];
-    //第一个信号没有触发sendCompleted 不会触发then
-    [subscriber sendCompleted];
-    return nil;
-    }] then:^RACSignal *{
-    return [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-    [subscriber sendNext:@2];
-    return nil;
-    }];
+        [subscriber sendNext:@1];
+        //第一个信号没有触发sendCompleted 不会触发then
+        [subscriber sendCompleted];
+        return nil;
+        }] then:^RACSignal *{
+            return [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+            [subscriber sendNext:@2];
+            return nil;
+        }];
     }] subscribeNext:^(id x) {
 
-    // 只能接收到第二个信号的值，也就是then返回信号的值
-    NSLog(@&quot;then -&gt; %@&quot;,x);
+        // 只能接收到第二个信号的值，也就是then返回信号的值
+        NSLog(@&quot;then -&gt; %@&quot;,x);
     }];
 </code></pre>
 
     <p><strong>14.distinctUntilChanged:当上一次的值和当前的值有明显的变化就会发出信号，否则会被忽略掉。</strong><br/>
         过滤，当上一次和当前的值不一样，就会发出内容。在开发中，刷新UI经常使用，只有两次数据不一样才需要刷新</p>
 
-<pre><code>[[self.userIdTF.rac_textSignal distinctUntilChanged] subscribeNext:^(id x) {
+<pre><code>
+    [[self.userIdTF.rac_textSignal distinctUntilChanged] subscribeNext:^(id x) {
 
-    NSLog(@&quot;distinctUntilChanged -&gt; %@&quot;,x);
+        NSLog(@&quot;distinctUntilChanged -&gt; %@&quot;,x);
     }];
 </code></pre>
 
     <p><strong>15.timeout 超时，可以让一个信号在一定的时间后，自动报错。</strong></p>
 
-<pre><code>RACSignal *timeOutSignal = [[RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-    return nil;
+<pre><code>
+    RACSignal *timeOutSignal = [[RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+        return nil;
     }] timeout:1 onScheduler:[RACScheduler currentScheduler]];
 
-    [timeOutSignal subscribeNext:^(id x) {
-    NSLog(@&quot;timeOutSignal -&gt; %@&quot;,x);
+        [timeOutSignal subscribeNext:^(id x) {
+        NSLog(@&quot;timeOutSignal -&gt; %@&quot;,x);
     } error:^(NSError *error) {
-    // 1秒后会自动调用
-    NSLog(@&quot;timeOut error-&gt; %@&quot;,error);
+        // 1秒后会自动调用
+        NSLog(@&quot;timeOut error-&gt; %@&quot;,error);
     }];
 </code></pre>
 
     <p><strong>16.interval 定时：每隔一段时间发出信号</strong></p>
 
-<pre><code>//
+<pre><code>
+    //
     [[RACSignal interval:1 onScheduler:[RACScheduler currentScheduler]] subscribeNext:^(id x) {
-    //返回当前时间
-    NSLog(@&quot;interval 1ms -&gt; %@&quot;,x);
+        //返回当前时间
+        NSLog(@&quot;interval 1ms -&gt; %@&quot;,x);
     }];
 </code></pre>
 
     <p><strong>17.delay 延迟发送信号</strong></p>
 
-<pre><code>[[[RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-    [subscriber sendNext:@1];
-    return nil;
+<pre><code>
+    [[[RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+        [subscriber sendNext:@1];
+        return nil;
     }] delay:2] subscribeNext:^(id x) {
 
     NSLog(@&quot;delay 2s-&gt; %@&quot;,x);
@@ -472,32 +498,34 @@
 
     <p><strong>18. retry重试 ：只要失败，就会重新执行创建信号中的block,直到成功.</strong></p>
 
-<pre><code>__block int i = 0;
+<pre><code>
+    __block int i = 0;
     [[[RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
 
-    if (i == 10) {
-    [subscriber sendNext:@1];
-    }else{
-    [subscriber sendError:nil];
-    }
-    i++;
-    return nil;
+        if (i == 10) {
+            [subscriber sendNext:@1];
+        }else{
+            [subscriber sendError:nil];
+        }
+        i++;
+        return nil;
     }] retry] subscribeNext:^(id x) {
-    NSLog(@&quot;retrySignal -&gt; %@&quot;,x);
+        NSLog(@&quot;retrySignal -&gt; %@&quot;,x);
     } error:^(NSError *error) {
-    NSLog(@&quot;接收到错误&quot;);
+        NSLog(@&quot;接收到错误&quot;);
     }];
 
 </code></pre>
 
     <p><strong>19.throttle节流:当某个信号发送比较频繁时，可以使用节流，在某一段时间不发送信号内容，过了一段时间获取信号的最新内容发出。</strong></p>
 
-<pre><code>RACSubject *throttleSignal = [RACSubject subject];
+<pre><code>
+    RACSubject *throttleSignal = [RACSubject subject];
 
     // 节流，在一定时间（1秒）内，不接收任何信号内容，过了这个时间（1秒）获取最后发送的信号内容发出。
     [[throttleSignal throttle:1] subscribeNext:^(id x) {
 
-    NSLog(@&quot;throttleSignal -&gt; %@&quot;,x);
+        NSLog(@&quot;throttleSignal -&gt; %@&quot;,x);
     }];
 
 </code></pre>
@@ -506,23 +534,25 @@
         reduceblcok中的参数，有多少信号组合，reduceblcok就有多少参数，每个参数就是之前信号发出的内容<br/>
         reduceblcok的返回值：聚合信号之后的内容。</p>
 
-<pre><code>[[RACSignal combineLatest:@[validPasswordSignal,validUserNameSignal] reduce:^id(NSNumber *usernameValid, NSNumber *passwordValid){
-    return @([usernameValid boolValue] &amp;&amp; [passwordValid boolValue]);
+<pre><code>
+    [[RACSignal combineLatest:@[validPasswordSignal,validUserNameSignal] reduce:^id(NSNumber *usernameValid, NSNumber *passwordValid){
+        return @([usernameValid boolValue] &amp;&amp; [passwordValid boolValue]);
     }] subscribeNext:^(NSNumber *signupActive) {
-    self.loginBtn.enabled = [signupActive boolValue];
+        self.loginBtn.enabled = [signupActive boolValue];
     }];
 </code></pre>
 
     <p><strong>21.doNext:</strong><br/>
         你可以看到doNext:是直接跟在按钮点击事件的后面。而且doNext: block并没有返回值。因为它是附加操作，并不改变事件本身。</p>
 
-<pre><code>//
+<pre><code>
+    //
     [[[[self.loginBtn rac_signalForControlEvents:UIControlEventTouchUpInside] doNext:^(id x) {
-    self.loginBtn.enabled = NO;
+        self.loginBtn.enabled = NO;
     }] flattenMap:^RACStream *(id value) {
-    return [self loginSignal];
+        return [self loginSignal];
     }] subscribeNext:^(id x) {
-    self.loginBtn.enabled = YES;
+        self.loginBtn.enabled = YES;
 
     }];
 </code></pre>

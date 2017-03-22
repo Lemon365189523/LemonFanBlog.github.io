@@ -40,7 +40,8 @@
 
     <p>NSUserDefults类提供了管理用户首选项的API，这些信息用于配置应用程序，会永久地存储在本地文件系统中。</p>
 
-<pre><code>[[NSUserDefaults standardUserDefaults] setObject:@(2) forKey:@&quot;number&quot;];
+<pre><code>
+    [[NSUserDefaults standardUserDefaults] setObject:@(2) forKey:@&quot;number&quot;];
     [[NSUserDefaults standardUserDefaults] synchronize];
 
     NSNumber *number = [[NSUserDefaults standardUserDefaults] objectForKey:@&quot;number&quot;];
@@ -51,7 +52,9 @@
     <p>NSRegularExpression类用于在字符串中处理正则表达式。正则表达式是一种设置和识别文本的模式，NSRegularExpression类含有创建和初始化NSRegularExpression对象方法以及执行各种正则表达式操作。<br/>
         NSTextCheckingResult类用于描述被文本检查操作找到的项目。</p>
 
-<pre><code>NSError *error;
+<pre><code>
+
+    NSError *error;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@&quot;World&quot; options:NSRegularExpressionCaseInsensitive error:&amp;error];
 
     NSString *greeting = @&quot;Hello World&quot;;
@@ -69,7 +72,9 @@
         <strong>NSFileHandle文件管理</strong><br/>
         使用该类的方法可以创建和初始化文件句柄、获取文件描述符、使用文件句柄执行文件I/O操作以及关闭文件。</p>
 
-<pre><code>NSString *tmpDir = NSTemporaryDirectory();
+<pre><code>
+
+    NSString *tmpDir = NSTemporaryDirectory();
     NSString *myFile = [NSString stringWithFormat:@&quot;%@/Example.txt&quot;,tmpDir];
     NSFileHandle *fileHandle = [NSFileHandle fileHandleForReadingAtPath:myFile];
     if (fileHandle) {
@@ -81,7 +86,9 @@
     <p><strong>NSFileManager</strong><br/>
         NSFileManager类提供了执行基础文件系统操作的通用方法，这些操作包括创建文件管理器、查找目录、查询目录内容、管理文件和目录项、创建指向文件的软/硬链接、查询文件访问操作、获取/设置文件的系统属性以及管理iCloud存储项。</p>
 
-<pre><code>NSFileManager *manager = [NSFileManager defaultManager];
+<pre><code>
+
+    NSFileManager *manager = [NSFileManager defaultManager];
     NSString *currentPath = [manager currentDirectoryPath];
     NSArray *contents = [manager contentsOfDirectoryAtPath:currentPath error:nil];
     NSLog(@&quot;contents-&gt;%@&quot;,contents);
