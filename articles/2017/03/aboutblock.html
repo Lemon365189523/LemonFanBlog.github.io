@@ -40,7 +40,8 @@
         声明块类型的语法<br/>
         <img src="../../../Images/block语法.png" alt="屏幕快照"/>￼</p>
 
-<pre><code>//声明一个有返回值为int 有一个参的block
+<pre><code>
+    //声明一个有返回值为int 有一个参的block
     int (^oneParamBlock)(int );
     //声明一个没有返回值为int 有两个参的block
     void (^twoParamBlock)(int , int);
@@ -53,22 +54,24 @@
 
     <h2 id="toc_2">2.块常量的使用</h2>
 
-<pre><code>//声明一个block
+<pre><code>
+    //声明一个block
     typedef int (^AdderBlock)(int);
     //创建一个参数为block的方法
     -(int)block:(AdderBlock) block{
-    int a = 0;
-    if (block) {
-    a = block(4);
-    }
-    return a;
+        int a = 0;
+            if (block) {
+                a = block(4);
+            }
+        return a;
     }
 </code></pre>
 
-<pre><code>//方法调用
+<pre><code>
+    //方法调用
     int value = [self block:^int(int a) {
-    int b = a + 4;
-    return b;
+        int b = a + 4;
+        return b;
     }];
 
     NSLog(@&quot;%d&quot;,value);//value = 8
@@ -76,9 +79,10 @@
 
     <p>可以使用一条语句定义并调用块表达式。注意，块表达式是匿名的，因此调用操作符会接受带有符合块表达式的参数列表的匿名函数</p>
 
-<pre><code>//没有返回值 匿名block
+<pre><code>
+    //没有返回值 匿名block
     ^(NSString *user){
-    NSLog(@&quot;%@&quot;,user);
+        NSLog(@&quot;%@&quot;,user);
     }(@&quot;Lemon&quot;);
 
 </code></pre>
@@ -87,10 +91,11 @@
 
     <p>默认情况下，在块常量表达式中通过词汇范围访问的块局部变量不能修改。使用存储类型修改符<code>__block</code>可以将这些变量切换为读写模式。</p>
 
-<pre><code>__block int myValue = 10;
+<pre><code>
+    __block int myValue = 10;
     void(^intBlock)(int) = ^(int amout){
-    myValue += amout;
-    NSLog(@&quot;新值：%d&quot;,myValue);
+        myValue += amout;
+        NSLog(@&quot;新值：%d&quot;,myValue);
     };
     intBlock(5);
 </code></pre>
@@ -101,11 +106,12 @@
 
     <p>在运行程序时，块常量表达式会或的栈内存，因而会拥有与局部变量相同的生命周期。因此，它们必须被复制到永久存储区域（即堆）中，才能在定义它们的范围之外使用。</p>
 
-<pre><code>void (^greetingBlock)(void);
+<pre><code>
+    void (^greetingBlock)(void);
     {//范围的起点，将局部变量压入栈中
-    greetingBlock = ^{
-    NSLog(@&quot;Hello World!&quot;);
-    }
+        greetingBlock = ^{
+            NSLog(@&quot;Hello World!&quot;);
+        }
     }//范围的终点，从栈中弹出变量（即块常量）
     greetingBlock();//调用这个块可能会使程序崩溃！
 </code></pre>
