@@ -37,3 +37,8 @@ nav ul li a, .logo a
     color: #fff;
 }
 
+
+a:hover
+{
+    color: #FFFFFF;
+}
