@@ -529,12 +529,21 @@
 <pre><code>
     var userName: MutableProperty&lt;String?&gt; = MutableProperty&lt;String?&gt;(nil)
     var userPw : MutableProperty&lt;String?&gt; = MutableProperty&lt;String?&gt;(nil)
+    var logAction = Action&lt;Void, Void, NoError&gt; { (input: Void) -&gt; SignalProducer&lt; Void , NoError&gt; in
+        return SignalProducer{ (observer, disposable) in
+            observer.send(value: ())
+            observer.sendCompleted()
+        }
+    }
+
 </code></pre>
 
 <pre><code class="language-swift">
     self.viewModel!.userName &lt;~ nameTF.reactive.textValues
     self.viewModel!.userPw &lt;~ pwTF.reactive.textValues
+    loginBtn.reactive.pressed = CocoaAction&lt;UIButton&gt;((viewModel?.logAction)!)
 </code></pre>
+
 
 </div>
 <!--页脚-->
