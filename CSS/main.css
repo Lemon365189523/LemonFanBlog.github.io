@@ -434,3 +434,9 @@ ul.share-group
     right: 30px;
     border: 1px solid #888888;
 }
+
+::selection
+{
+    background-color: #1abc9c;
+    color: #FFFFFF;
+}
