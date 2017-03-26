@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reactivecocoa 5.0 入门</title>
+    <meta charset="utf-8">
+    <script src="../../../JS/jQuery.js" type="text/javascript"></script>
+    <script src="../../../JS/main.js"></script>
+    <!--常规化重置CSS 保留部分原有的样式-->
+    <link rel="stylesheet" href="../../../CSS/CSSReset.css">
+    <link rel="stylesheet" href="../../../CSS/main.css">
+    <!--markdown生成的代码-->
+    <link rel="stylesheet" href="../../../CSS/markDown.css">
+
+    <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
+    <script src="../../../JS/article.js"></script>
+    <link rel="stylesheet" href="../../../CSS/article.css">
+    <link rel="stylesheet" href="../../../styles/default.css">
+    <script src="../../../JS/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="shortcut icon" href="../../../Images/bitbug_favicon.ico" />
+</head>
+<body>
+<div>
+    <nav id="nav">
+        <div class="logo"><a href=""></a></div>
+        <ul>
+            <li><a href="../../../index.html" >首页</a></li>
+            <li><a href="../../../about_me.html" >About</a></li>
+            <li id="sidebar_trigger"><a href="javascript:void(0);" >专题菜单</a></li>
+        </ul>
+    </nav>
+</div>
+<!-- 内容  -->
+<div class="markdown-body">
+    <h1 id="toc_0">Reactivecocoa 5.0 入门</h1>
+
+    <blockquote>
+        <p>最近再重新学习swift，从OC的RAC转到Swift的RAC方法调用大变样，各种的不适应。</p>
+    </blockquote>
+
+    <h3 id="toc_1">简单了解</h3>
+
+    <p>转换的类型有：<br/>
+        RACSignal 和 SignalProducer、 Signal<br/>
+        RACCommand 和 Action<br/>
+        RACScheduler 和 SchedulerType<br/>
+        RACDisposable 和 Disposable</p>
+
+    <p>需使用的头文件</p>
+
+    <p>import ReactiveCocoa</p>
+
+    <p>import Result</p>
+
+    <p>import ReactiveSwift</p>
+
+    <p>框架组成：<br/>
+        1.事件（Event）<br/>
+        2.监听器（Observer）<br/>
+        3.清洁者（Disposable）<br/>
+        4.信号（Signal）<br/>
+        5.管道：(Pipes)<br/>
+        6.信号生产者：(Signal Producers)<br/>
+        7.缓冲：(Buffers)<br/>
+        8.动作：(Actions)<br/>
+        9.属性：(Properties)<br/>
+        10.调度器：(Schedulers)</p>
+
+    <p>从OC的RAC转到Swift的RAC方法调用大变样.</p>
+
+    <h3 id="toc_2">1.冷信号</h3>
+
+<pre><code>
+    func bindSignal1(){
+        //1.冷信号
+        let producer = SignalProducer&lt;String, NoError&gt;.init { (observer, _) in
+            print(&quot;新的订阅，启动操作&quot;)
+            observer.send(value: &quot;Hello&quot;)
+            observer.send(value: &quot;World&quot;)
+            observer.sendCompleted()
+        }
+
+        //创建观察者 (多个观察者观察会有副作用)
+        let sub1 = Observer&lt;String, NoError&gt;(value: {
+            print(&quot;观察者1接受信号\($0)&quot;)
+        })
+
+        let sub2 = Observer&lt;String, NoError&gt;(value: {
+            print(&quot;观察者2接受信号\($0)&quot;)
+        })
+        //观察者订阅信号
+        print(&quot;观察者1订阅信号&quot;)
+        producer.start(sub1)
+        print(&quot;观察者2订阅信号&quot;)
+        producer.start(sub2)
+
+    }
+
+</code></pre>
+
+    <h3 id="toc_3">2.热信号</h3>
+
+<pre><code>
+    func bindSignal2(){
+
+        //2.热信号 (通过管道创建)
+        let (signalA, observerA) = Signal&lt;String, NoError&gt;.pipe()
+        let (signalB, observerB) = Signal&lt;Int, NoError&gt;.pipe()
+
+        Signal.combineLatest(signalA,signalB).observeValues { (value) in
+            print(&quot;两个热信号收到的值\(value.0) + \(value.1)&quot;)
+        }
+        //订阅信号要在send之前
+        signalA.observeValues { (value) in
+            print(&quot;signalA : \(value)&quot;)
+        }
+
+        observerA.send(value: &quot;sssss&quot;)
+        //        observerA.sendCompleted()
+        observerB.send(value: 2)
+        //        observerB.sendCompleted()
+
+        observerB.send(value: 100)
+        //不sendCompleted和sendError 热信号一直激活
+        //        observerB.sendCompleted()
+    }
+</code></pre>
+
+    <h3 id="toc_4">3.监听文本框</h3>
+
+<pre><code class="language-swift">
+    func bindSignal3(){
+        //2文本输入框的监听
+        nameTF.reactive.continuousTextValues.observeValues { (text) in
+            print(text ?? &quot;&quot;)
+
+        }
+        //监听黏贴进来的文本
+        let result = nameTF.reactive.values(forKeyPath: &quot;text&quot;)
+        result.start { (text) in
+            print(text)
+        }
+
+        //按钮监听
+        loginBtn.reactive.controlEvents(.touchUpInside).observeValues { (button) in
+            print(&quot;点击ann&quot;)
+        }
+    }
+
+</code></pre>
+
+    <h3 id="toc_5">4.信号合并</h3>
+
+    <p>合成后的新事件流只有在收到每个合成流的至少一个值后才会发送出去。接着就会把每个流的最新的值一起输出。</p>
+
+<pre><code>
+    func bindSignal4(){
+        //4.信号合并 两个要被订阅combineLatest 才能被订阅，被订阅后，合并中其中一个sendNext都会激活订阅
+        let (signalA, observerA) = Signal&lt;String, NoError&gt;.pipe()
+        let (signalB, observerB) = Signal&lt;Array&lt;Any&gt; , NoError&gt;.pipe()
+        Signal.combineLatest(signalA, signalB).observeValues { (value) in
+        print(&quot;合并的信号:\(value)&quot;)
+        }
+
+        observerA.send(value: &quot;xxx&quot;)
+        observerA.sendCompleted()
+        observerB.send(value: [&quot;sdsd&quot;,&quot;ddddd&quot;])
+        observerB.sendCompleted()
+
+    }
+
+</code></pre>
+
+    <h3 id="toc_6">5.信号联合</h3>
+
+    <p>zip中的信号都要被订阅才能激活,意味着如果是一个流的第N个元素，一定要等到另外一个流第N值也收到才会一起组合发出。</p>
+
+<pre><code class="language-swift">
+    func bindSignal5(){
+        //5.信号联合
+        let (signalA, observerA) = Signal&lt;String, NoError&gt;.pipe()
+        let (signalB, observerB) = Signal&lt;String, NoError&gt;.pipe()
+
+        //两个到需要订阅 才激活zip
+        Signal.zip(signalA, signalB).observeValues { (value) in
+            print(&quot;zip: \(value)&quot;)
+        }
+
+        observerA.send(value: &quot;1&quot;)
+        //        observerA.sendCompleted()
+        observerB.send(value: &quot;2&quot;)
+        //        observerB.sendCompleted()
+        observerB.send(value: &quot;cc&quot;)
+        observerA.send(value: &quot;dd&quot;)
+    }
+</code></pre>
+
+    <h3 id="toc_7">6.调度器</h3>
+
+<pre><code>
+    func bindSiganl6() {
+        //6.调度器
+        QueueScheduler.main.schedule(after: Date.init(timeIntervalSinceNow: 3)) {
+            print(&quot;主线程3秒过去了&quot;)
+        }
+        QueueScheduler.init().schedule(after: Date.init(timeIntervalSinceNow: 2)) {
+            print(&quot;子线程2秒过去了&quot;)
+        }
+    }
+</code></pre>
+
+    <h3 id="toc_8">7.通知</h3>
+
+<pre><code>
+    func bindSignal7(){
+        //7.通知
+        NotificationCenter.default.reactive.notifications(forName: Notification.Name(rawValue: &quot;UIKeyboardWillShowNotification&quot;), object: nil).observeValues { (notification) in
+            print(&quot;键盘弹起&quot;)
+        }
+
+        NotificationCenter.default.reactive.notifications(forName: Notification.Name(rawValue:&quot;UIKeyboardWillHideNotification&quot;), object: nil).observeValues { (notification) in
+            print(&quot;键盘收起&quot;)
+        }
+    }
+</code></pre>
+
+    <h3 id="toc_9">8.KVO</h3>
+
+<pre><code class="language-swift">
+    func bindSignal8(){
+        //8KVO
+        let result = self.nameTF.reactive.values(forKeyPath: &quot;text&quot;)
+        result.start { (text) in
+            print(text);
+        }
+    }
+
+</code></pre>
+
+    <h3 id="toc_10">9.迭代器</h3>
+
+<pre><code>
+    func bindSignal9() {
+        //9.迭代器
+        let array:[String] = [&quot;name1&quot;, &quot;name2&quot;]
+        var arrayIterator = array.makeIterator()
+        while let temp = arrayIterator.next() {
+            print(temp)
+        }
+
+        //swift系统自带
+        array.forEach { (value) in
+            print(value)
+        }
+    }
+</code></pre>
+
+    <h3 id="toc_11">10.on</h3>
+
+    <p>可以通过 on来观察signal，生成一个新的信号，即使没有订阅者也会被触发。<br/>
+        和 observe相似，也可以只观察你关注的某个事件。<br/>
+        需要提到的是 producer要started后才会触发。</p>
+
+<pre><code>
+    let signal = SignalProducer&lt;String , NoError&gt;.init { (obsever, _) in
+        obsever.send(value: &quot;ddd&quot;)
+        obsever.sendCompleted()
+    }
+
+    //可以通过 on来观察signal，生成一个新的信号，即使没有订阅者（sp.start()）也会被触发。
+    let sp = signal.on(starting: {
+        print(&quot;开始&quot;)
+    }, started: {
+        print(&quot;结束&quot;)
+    }, event: { (event) in
+        print(&quot;Event: \(event)&quot;)
+    }, failed: { (error) in
+        print(&quot;error: \(error)&quot;)
+    }, completed: {
+        print(&quot;信号完成&quot;)
+    }, interrupted: {
+        print(&quot;信号被中断&quot;)
+    }, terminated: {
+        print(&quot;信号结束&quot;)
+    }, disposed: {
+        print(&quot;信号清理&quot;)
+    }) { (value) in
+        print(&quot;value: \(value)&quot;)
+    }
+
+    sp.start()
+</code></pre>
+
+    <p>打印结果:</p>
+
+<pre><code>开始
+    Event: VALUE ddd
+    value: ddd
+    Event: COMPLETED
+    信号完成
+    信号结束
+    信号清理
+    结束
+</code></pre>
+
+    <h3 id="toc_12">11.Map</h3>
+
+    <p>Map映射 用于将一个事件流的值操作后的结果产生一个新的事件流。</p>
+
+<pre><code class="language-swift">
+    let (signal, observer) = Signal&lt;String, NoError&gt;.pipe()
+    signal.map { (string) -&gt; Int in
+        return string.lengthOfBytes(using: .utf8)
+    }.observeValues { (length) in
+        print(&quot;length: \(length)&quot;)
+    }
+
+    observer.send(value: &quot;lemon&quot;)
+
+    observer.send(value: &quot;something&quot;)
+</code></pre>
+
+    <h3 id="toc_13">12.filter</h3>
+
+    <p>//filter函数可以按照之前预设的条件过滤掉不满足的值</p>
+
+<pre><code>
+    let (signal, observer) = Signal&lt;Int, NoError&gt;.pipe()
+    signal.filter { (value) -&gt; Bool in
+        return value % 2 == 0
+    }.observeValues { (value) in
+        print(&quot;\(value)能被2整除&quot;)
+    }
+    observer.send(value: 3)
+    observer.send(value: 4)
+    observer.send(value: 6)
+    observer.send(value: 7)
+</code></pre>
+
+    <h3 id="toc_14">13.reduce</h3>
+
+    <p>reduce将事件里的值聚集后组合成一个值</p>
+
+<pre><code class="language-swift">
+    let (signal, observer) = Signal&lt;Int, NoError&gt;.pipe()
+    //reduce后的是聚合的次数
+    signal.reduce(3) { (a, b) -&gt; Int in
+    //a是相乘后的值 b是传入值
+        print(&quot;a:\(a) b:\(b)&quot;)
+        return a * b
+    }.observeValues { (value) in
+        print(value)
+    }
+
+    observer.send(value: 2)
+    observer.send(value: 5)
+    observer.send(value: 4)
+    //要注意的是最后算出来的值直到输入的流完成后才会被发送出去。
+    observer.sendCompleted()
+</code></pre>
+
+    <h3 id="toc_15">14.flatten</h3>
+
+    <p>flatten 将一个事件流里的事件流变成一个单一的事件流。新的事件流的值按照指定的策略(FlattenStrategy)由内部的事件流的值组成。<br/>
+        被压平的值按照会变成外层的流的类型。比如：一个SignalProducers里的Signal，被flatten后的类型是SignalProducers。</p>
+
+    <h3 id="toc_16">15.合并</h3>
+
+    <p>简单的说就是<code>merge</code>按照时间顺序组成，<code>concat</code>则是按照里面整个流顺序组合。<code>latest</code>是只记录最近一次过来的值的那个流。</p>
+
+    <p><strong>1   .merge</strong><br/>
+        .Merge 策略将每个流的值立刻组合输出。无论内部还是外层的流如果收到失败就终止。</p>
+
+<pre><code class="language-swift">
+    let (producerA, lettersObserver) = Signal&lt;String, NoError&gt;.pipe()
+    let (producerB, numbersObserver) = Signal&lt;String, NoError&gt;.pipe()
+    let (signal, observer) = Signal&lt;Signal&lt;String, NoError&gt;, NoError&gt;.pipe()
+    signal.flatten(.merge).observeValues { (value) in
+        print(&quot;value: \(value)&quot;)
+    }
+    observer.send(value: producerA)
+    observer.send(value:producerB)
+    observer.sendCompleted()
+    lettersObserver.send(value:&quot;a&quot;) // prints &quot;a&quot;
+    numbersObserver.send(value:&quot;1&quot;) // prints &quot;1&quot;
+    lettersObserver.send(value:&quot;b&quot;) // prints &quot;b&quot;
+    numbersObserver.send(value:&quot;2&quot;) // prints &quot;2&quot;
+    lettersObserver.send(value:&quot;c&quot;) // prints &quot;c&quot;
+    numbersObserver.send(value:&quot;3&quot;) // prints &quot;3&quot;
+
+</code></pre>
+
+    <p><strong>2  .concet</strong><br/>
+        Concat 策略是将内部的SignalProducer排序。外层的producer是马上被started。随后的producer直到前一个发送完成后才会start。一有失败立即传到外层。</p>
+
+<pre><code>
+    let (signalA, lettersObserver) = Signal&lt;Any, NoError&gt;.pipe()
+    let (signalB, numberObserver) = Signal&lt;Any, NoError&gt;.pipe()
+
+    let (siganl, observer) = Signal&lt;Signal&lt;Any, NoError&gt;, NoError&gt;.pipe()
+
+    siganl.flatten(.concat).observeValues { (value) in
+        print(&quot;value: \(value)&quot;)
+    }
+    observer.send(value: signalA)
+    observer.send(value: signalB)
+    observer.sendCompleted()
+
+    lettersObserver.send(value: &quot;dddd&quot;)//dddd
+    numberObserver.send(value: 33)    //不打印
+
+    lettersObserver.send(value: &quot;sss&quot;)//sss
+    lettersObserver.send(value: &quot;ffff&quot;)//ffff
+    lettersObserver.sendCompleted()
+    //要前一个信号执行完毕后，下一个信号才能被订阅
+    numberObserver.send(value: 44)// 44
+</code></pre>
+
+    <p><strong>3 .Latest</strong><br/>
+        .latest只接收最新进来的那个流的值。</p>
+
+<pre><code class="language-swift">
+    let (signalA, lettersObserver) = Signal&lt;Any, NoError&gt;.pipe()
+    let (signalB, numberObserver) = Signal&lt;Any, NoError&gt;.pipe()
+
+    let (siganl, observer) = Signal&lt;Signal&lt;Any, NoError&gt;, NoError&gt;.pipe()
+
+    siganl.flatten(.latest).observeValues { (value) in
+        print(&quot;value: \(value)&quot;)
+    }
+    observer.send(value: signalA)
+    //        observer.send(value: signalB)
+
+    lettersObserver.send(value: &quot;dddd&quot;)  //dddd
+    numberObserver.send(value: 33)      //不打印
+    lettersObserver.send(value: &quot;sss&quot;)  //sss
+    observer.send(value: signalB)
+    //只接受最近进来的信号
+    numberObserver.send(value: 44)  //44
+    lettersObserver.send(value: &quot;ffff&quot;) // 不打印
+</code></pre>
+
+    <h3 id="toc_17">16.flatMapError</h3>
+
+    <p>flatMapError捕捉一个由SignalProducer产生的失败，然后产生一个新的SignalProducer代替。</p>
+
+<pre><code>
+    let (signal, observer) = Signal&lt;Any, NSError&gt;.pipe()
+    let error = NSError.init(domain: &quot;domian&quot;, code: 0, userInfo: nil)
+    signal.flatMapError { (value) -&gt; SignalProducer&lt;Any, NoError&gt; in
+        return SignalProducer&lt;Any, NoError&gt;.init({ () -&gt; String in
+            return &quot;sssss&quot;
+            })
+        }.observeValues { (value) in
+            print(value)
+        }
+
+    observer.send(value: 3333)
+    observer.send(value: 444)
+    observer.send(error: error)
+</code></pre>
+
+    <p><strong>17.retry</strong><br/>
+        retry用于按照指定次数，在失败时重启SignalProducer。</p>
+
+<pre><code>
+    var tries = 0
+    let limit = 2
+    let error = NSError.init(domain: &quot;domian&quot;, code: 0, userInfo: nil)
+
+    let signal = SignalProducer&lt;String, NSError &gt;.init { (observer, _) in
+        tries += 1
+        if tries &lt; limit {
+            observer.send(error: error)
+        }else{
+            observer.send(value: &quot;Success&quot;)
+            observer.sendCompleted()
+        }
+    }
+
+    // retry用于按照指定次数，在失败时重启SignalProducer。
+    signal.on(failed:{e in
+            print(&quot;Failure&quot;)
+        }).retry(upTo:3).start { (event) in
+            switch event {
+            case .completed:
+                print(&quot;Complete&quot;)
+            //判断输出值是否相等
+            case .value(&quot;Success&quot;):
+                print(&quot;ddd&quot;)
+            case .interrupted:
+                print(&quot;interrupted&quot;)
+            case .failed(error):
+                print(error)
+            default:
+            break
+
+        }
+    }
+</code></pre>
+
+    <h3 id="toc_18">18.continuousTextValues</h3>
+
+    <p>usernameTextField.reactive就是把usernameTextField变成可响应的，而continuousTextValues就是text值的信号。</p>
+
+<pre><code>
+    self.nameTF.reactive.continuousTextValues.observe { (value) in
+        print(value)
+    }
+</code></pre>
+
+    <h3 id="toc_19">19.按钮点击事件和其他事件转信号</h3>
+
+<pre><code>
+    self.loginBtn.reactive.controlEvents(.touchUpInside).observe { (button) in
+        print(&quot;点击按钮&quot;)
+    }
+
+</code></pre>
+
+    <h3 id="toc_20">20.属性的绑定</h3>
+
+    <p>&lt;~运算符是提供了几种不同的绑定属性的方式。注意这里绑定的属性必须是 MutablePropertyType类型的。</p>
+
+    <p>property &lt;~ signal 将一个属性和信号绑定在一起，属性的值会根据信号送过来的值刷新。<br/>
+        property &lt;~ producer 会启动这个producer，并且属性的值也会随着这个产生的信号送过来的值刷新。<br/>
+        property &lt;~ otherProperty将一个属性和另一个属性绑定在一起，这样这个属性的值会随着源属性的值变化而变化。</p>
+
+<pre><code>
+    var userName: MutableProperty&lt;String?&gt; = MutableProperty&lt;String?&gt;(nil)
+    var userPw : MutableProperty&lt;String?&gt; = MutableProperty&lt;String?&gt;(nil)
+</code></pre>
+
+<pre><code class="language-swift">
+    self.viewModel!.userName &lt;~ nameTF.reactive.textValues
+    self.viewModel!.userPw &lt;~ pwTF.reactive.textValues
+</code></pre>
+
+</div>
+<!--页脚-->
+<footer>
+    <ul class="share-group">
+        <li><a href="https://github.com/lemon365189523" target="_blank"><img src="../../../Images/github.png" ></a></li>
+        <li><a href="http://weibo.com/u/1936474822?is_all=1" target="_blank"><img src="../../../Images/sina.png" ></a></li>
+        <li><a href="javascript:void(0);"  id="share_qq"><img src="../../../Images/QQ.png" ></a></li>
+    </ul>
+    <div class="copy">
+        &copy 2017 Lemon
+    </div>
+</footer>
+<!--遮盖-->
+<div class="mask"></div>
+<!--侧边栏-->
+<div class="sidebar">
+    <ul>
+        <li><a href="">Objective-C</a></li>
+        <li><a href="">Swift</a></li>
+        <li><a href="">HTML5</a></li>
+        <li><a href="">CSS</a></li>
+        <li><a href="">JavaScript</a></li>
+    </ul>
+</div>
+
+<button id="back-to-top">返回顶部</button>
+
+</body>
+</html>
