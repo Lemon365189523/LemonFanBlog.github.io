@@ -3,6 +3,10 @@
     overflow: hidden;
     background-size: cover;
     background: #444 url(../Images/pic7.jpg) no-repeat  center;
+    background-attachment: fixed;  /*固定*/
+    background-repeat: no-repeat; /*不重复*/
+    background-size: cover;       /*填满*/
+    background-position: center   /*居中*/
 }
 
 .about-banner
