@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LMAttributedString是一个函数式编辑富文本的库</title>
+    <meta charset="utf-8">
+    <script src="../../../JS/jQuery.js" type="text/javascript"></script>
+    <script src="../../../JS/main.js"></script>
+    <!--常规化重置CSS 保留部分原有的样式-->
+    <link rel="stylesheet" href="../../../CSS/CSSReset.css">
+    <link rel="stylesheet" href="../../../CSS/main.css">
+    <!--markdown生成的代码-->
+    <link rel="stylesheet" href="../../../CSS/markDown.css">
+
+    <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
+    <script src="../../../JS/article.js"></script>
+    <link rel="stylesheet" href="../../../CSS/article.css">
+    <link rel="stylesheet" href="../../../styles/default.css">
+    <script src="../../../JS/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="shortcut icon" href="../../../Images/bitbug_favicon.ico" />
+</head>
+<body>
+<div>
+    <nav id="nav">
+        <div class="logo"><a href=""></a></div>
+        <ul>
+            <li><a href="../../../index.html" >首页</a></li>
+            <li><a href="../../../about_me.html" >About</a></li>
+            <li id="sidebar_trigger"><a href="javascript:void(0);" >专题菜单</a></li>
+        </ul>
+    </nav>
+</div>	
+<!-- 内容  -->
+<div class="markdown-body">
+    <h1 id="toc_0">LMAttributedString是一个函数式编辑富文本的库</h1>
+
+    <p>写这个库的原因是在学习ReactiveCocoa时候，理解了那么一点点的关于函数式编程的思想而写的，所以写的比较简陋望见谅。</p>
+
+    <h3 id="toc_1">CovoaPods</h3>
+
+    <p>使用CocoaPods ，加入<code>LMAttributedString</code>您的Xcode项目,在指定它在你的<code>Podfile</code>。</p>
+
+<pre><code>pod &#39;LMAttributedString&#39;
+</code></pre>
+
+    <h3 id="toc_2">下载</h3>
+
+    <p><a href="https://github.com/Lemon365189523/LMAttributedString">GitHub网址</a></p>
+
+    <h3 id="toc_3">关于怎么使用</h3>
+
+    <p>先创建一个LMAttributedString对象，<code>[LMAttributedString creatAttrubutedString]</code>,然后调用<code>setAttributes:</code>的方法。该方法是一个block里面有个<code>LMAttributeWorker</code>对象，用该对象来设置文本和效果。一个worker只操作对应设置的文本。<br/>
+        操作完毕把<code>LMAttributedString</code>对象里的<code>string</code>属性设置到UIlable或其他控件中<code>label.attributedText = attribute.string;</code></p>
+
+    <p>效果图</p>
+
+    <p><img src="http://upload-images.jianshu.io/upload_images/1396735-1b357503218c6bbd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="效果图01.png"/></p>
+
+<pre><code>LMAttributedString *attribute = [[[[LMAttributedString creatAttrubutedString] setAttributes:^(LMAttributeWorker *worker) {
+    [worker setString:@&quot;my &quot;];
+    [worker setFont:[UIFont fontWithName:@&quot;futura&quot; size:20.0]];
+    [worker setTextColor:[UIColor redColor]];
+    [worker setBackgroundColor:[UIColor greenColor]];
+    [worker setLigature:LMOtherLigature];
+    }]appendAttributes:^(LMAttributeWorker *worker) {
+    [worker setString:@&quot;name is&quot;];
+    [worker setFont:[UIFont fontWithName: @&quot;futura&quot; size: 30]];
+    [worker setTextColor:[UIColor blueColor]];
+    [worker setLigature:LMTextNotLigature];
+    [worker setSpace:3];
+    }] appendAttributes:^(LMAttributeWorker *worker) {
+    [worker setString:@&quot;Lemon&quot;];
+    [worker setShadow:CGSizeMake(0, 1) andRadius:5 andColor:[UIColor greenColor]];
+    [worker setLink:@&quot;www.baidu.com&quot;];
+    [worker setFont:[UIFont systemFontOfSize:15]];
+    [worker setBaselineOffset:-10];
+    [worker setObliqueness:0.5];
+    [worker setExpansion:-0.5];
+    [worker setImage:@&quot;lemon&quot; andBounds:CGRectMake(0, 0, 30, 30)];
+    }];
+</code></pre>
+
+    <p><img src="http://upload-images.jianshu.io/upload_images/1396735-3cce34c59b13539e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="效果图02.png"/></p>
+
+<pre><code>LMAttributedString *attribute = [[LMAttributedString creatAttrubutedString] setAttributes:^(LMAttributeWorker *worker) {
+    [worker setString:@&quot;写这个库的原因是在学习ReactiveCocoa时候，理解了那么一定点的关于函数式编程的思想而写的。&quot;];
+    [worker setlineSpacing:4];
+    [worker setlineBreakMode:NSLineBreakByCharWrapping];
+    [worker setTextAlignment:NSTextAlignmentRight];
+    [worker setUnderlineStyle:NSUnderlineStyleThick andColor:[UIColor whiteColor]];
+    [worker setStrokeWidth:3 andColor:[UIColor purpleColor]];
+
+    }];
+</code></pre>
+
+    <p>该库是刚刚开始写，很多地方需要优化，希望大家能给点意见，和那些地方不好也希望提点。</p>
+
+    <h2 id="toc_4">实现原理</h2>
+
+    <h3 id="toc_5">1.LMAttributedString类</h3>
+
+    <p>LMAttributedString类目前定义是三个方法</p>
+
+    <blockquote>
+<pre><code>+(instancetype) creatAttrubutedString;
+
+    -(LMAttributedString *)setAttributes:(LMSetTypeBlock) block;
+
+    -(LMAttributedString *) appendAttributes:(LMSetTypeBlock) block;
+</code></pre>
+
+        <blockquote>
+            <p>第一个方法创建实例对象<br/>
+                第二个方法是普通设置文本方法<br/>
+                第三个方法是拼接一段新文本</p>
+        </blockquote>
+    </blockquote>
+
+    <p><code>LMSetTypeBlock</code>定义一个含有LMAttributeWorker对象的block</p>
+
+<pre><code>typedef void(^LMSetTypeBlock)( LMAttributeWorker *worker);
+</code></pre>
+
+    <p><code>-(LMAttributedString *)setAttributes:(LMSetTypeBlock) block;</code>方法的实现</p>
+
+<pre><code>-(LMAttributedString *)setAttributes:(LMSetTypeBlock)block{
+    NSCParameterAssert(block != NULL);
+    LMAttributeWorker *worker = [[LMAttributeWorker alloc] initWithAttributedString:self];
+    block(worker);
+    return self;
+    }
+
+</code></pre>
+
+    <p>创建一个<code>LMAttributeWorker</code>对象，然后把该对象作为block的参数返回。</p>
+
+    <h3 id="toc_6">2.LMAttributeWorker类</h3>
+
+    <p>该类负责功能是设置LMAttributedString中的富文本字符串。</p>
+
+<pre><code>-(instancetype) initWithAttributedString:(LMAttributedString *) string;
+</code></pre>
+
+    <p>创建该对象时要传入一个LMAttributedString对象。</p>
+
+    <p>该对象准守一个<code>LMAttributeWork</code>协议,类里实现协议的方法。</p>
+
+<pre><code>-(void)setString:(NSString *)string{
+    if (self.setTextCount &gt; 0) {
+    return;
+    }
+    NSMutableAttributedString *abString = [[NSMutableAttributedString alloc] initWithString:string];
+    [self.attributedString.string appendAttributedString:abString];
+    self.setTextCount++;
+    }
+
+    -(void)setFont:(UIFont *)font{
+    LMNeedSetStringAssert
+    [self.attributedString.string addAttribute:NSFontAttributeName value:font range:[self stringRange]];
+    }
+    .
+    .
+    .
+    .
+</code></pre>
+
+    <h3 id="toc_7">3.LMAttributeWork协议</h3>
+
+    <p>该协议封装好要怎么设置文本的方法</p>
+
+<pre><code>@protocol LMAttributeWork &lt;NSObject&gt;
+
+
+    /**
+    设置文本（注意一个worker只能设置一次文本）
+
+    @param string 文本
+    */
+    -(void) setString:(nonnull NSString *)string;
+
+    /**
+    删除线
+
+    @param style 线的类型
+    @param color 线的颜色
+    */
+    -(void) setStrikethroughStyle:(NSUnderlineStyle) style andColor:(nullable UIColor *) color;
+
+    .
+    .
+    .
+    .
+</code></pre>
+
+</div>
+<!--页脚-->
+<footer>
+    <ul class="share-group">
+        <li><a href="https://github.com/lemon365189523" target="_blank"><img src="../../../Images/github.png" ></a></li>
+        <li><a href="http://weibo.com/u/1936474822?is_all=1" target="_blank"><img src="../../../Images/sina.png" ></a></li>
+        <li><a href="javascript:void(0);"  id="share_qq"><img src="../../../Images/QQ.png" ></a></li>
+    </ul>
+    <div class="copy">
+        &copy 2017 Lemon
+    </div>
+</footer>
+<!--遮盖-->
+<div class="mask"></div>
+<!--侧边栏-->
+<div id="sidebar">
+    <ul>
+        <li><a href="">Objective-C</a></li>
+        <li><a href="">Swift</a></li>
+        <li><a href="">HTML5</a></li>
+        <li><a href="">CSS</a></li>
+        <li><a href="">JavaScript</a></li>
+    </ul>
+</div>
+
+<button id="back-to-top">返回顶部</button>
+
+</body>
+</html>
