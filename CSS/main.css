@@ -399,7 +399,7 @@ ul.share-group
     right: -300px;
     bottom:0;
     width: 300px;
-    background: #333333;
+    background: #1abc9c;
     color: white;
     padding: 20px 0;
     z-index: 2;
@@ -423,7 +423,8 @@ ul.share-group
 
 #sidebar ul a:hover
 {
-    background: #16a085;
+    background: #FFFFFF;
+    color: #1abc9c;
 }
 
 /*返回顶部按钮*/

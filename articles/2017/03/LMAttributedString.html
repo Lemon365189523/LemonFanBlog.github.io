@@ -56,39 +56,41 @@
 
     <p><img src="http://upload-images.jianshu.io/upload_images/1396735-1b357503218c6bbd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="效果图01.png"/></p>
 
-<pre><code>LMAttributedString *attribute = [[[[LMAttributedString creatAttrubutedString] setAttributes:^(LMAttributeWorker *worker) {
-    [worker setString:@&quot;my &quot;];
-    [worker setFont:[UIFont fontWithName:@&quot;futura&quot; size:20.0]];
-    [worker setTextColor:[UIColor redColor]];
-    [worker setBackgroundColor:[UIColor greenColor]];
-    [worker setLigature:LMOtherLigature];
+<pre><code>
+    LMAttributedString *attribute = [[[[LMAttributedString creatAttrubutedString] setAttributes:^(LMAttributeWorker *worker) {
+        [worker setString:@&quot;my &quot;];
+        [worker setFont:[UIFont fontWithName:@&quot;futura&quot; size:20.0]];
+        [worker setTextColor:[UIColor redColor]];
+        [worker setBackgroundColor:[UIColor greenColor]];
+        [worker setLigature:LMOtherLigature];
     }]appendAttributes:^(LMAttributeWorker *worker) {
-    [worker setString:@&quot;name is&quot;];
-    [worker setFont:[UIFont fontWithName: @&quot;futura&quot; size: 30]];
-    [worker setTextColor:[UIColor blueColor]];
-    [worker setLigature:LMTextNotLigature];
-    [worker setSpace:3];
+        [worker setString:@&quot;name is&quot;];
+        [worker setFont:[UIFont fontWithName: @&quot;futura&quot; size: 30]];
+        [worker setTextColor:[UIColor blueColor]];
+        [worker setLigature:LMTextNotLigature];
+        [worker setSpace:3];
     }] appendAttributes:^(LMAttributeWorker *worker) {
-    [worker setString:@&quot;Lemon&quot;];
-    [worker setShadow:CGSizeMake(0, 1) andRadius:5 andColor:[UIColor greenColor]];
-    [worker setLink:@&quot;www.baidu.com&quot;];
-    [worker setFont:[UIFont systemFontOfSize:15]];
-    [worker setBaselineOffset:-10];
-    [worker setObliqueness:0.5];
-    [worker setExpansion:-0.5];
-    [worker setImage:@&quot;lemon&quot; andBounds:CGRectMake(0, 0, 30, 30)];
+        [worker setString:@&quot;Lemon&quot;];
+        [worker setShadow:CGSizeMake(0, 1) andRadius:5 andColor:[UIColor greenColor]];
+        [worker setLink:@&quot;www.baidu.com&quot;];
+        [worker setFont:[UIFont systemFontOfSize:15]];
+        [worker setBaselineOffset:-10];
+        [worker setObliqueness:0.5];
+        [worker setExpansion:-0.5];
+        [worker setImage:@&quot;lemon&quot; andBounds:CGRectMake(0, 0, 30, 30)];
     }];
 </code></pre>
 
     <p><img src="http://upload-images.jianshu.io/upload_images/1396735-3cce34c59b13539e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="效果图02.png"/></p>
 
-<pre><code>LMAttributedString *attribute = [[LMAttributedString creatAttrubutedString] setAttributes:^(LMAttributeWorker *worker) {
-    [worker setString:@&quot;写这个库的原因是在学习ReactiveCocoa时候，理解了那么一定点的关于函数式编程的思想而写的。&quot;];
-    [worker setlineSpacing:4];
-    [worker setlineBreakMode:NSLineBreakByCharWrapping];
-    [worker setTextAlignment:NSTextAlignmentRight];
-    [worker setUnderlineStyle:NSUnderlineStyleThick andColor:[UIColor whiteColor]];
-    [worker setStrokeWidth:3 andColor:[UIColor purpleColor]];
+<pre><code>
+    LMAttributedString *attribute = [[LMAttributedString creatAttrubutedString] setAttributes:^(LMAttributeWorker *worker) {
+        [worker setString:@&quot;写这个库的原因是在学习ReactiveCocoa时候，理解了那么一定点的关于函数式编程的思想而写的。&quot;];
+        [worker setlineSpacing:4];
+        [worker setlineBreakMode:NSLineBreakByCharWrapping];
+        [worker setTextAlignment:NSTextAlignmentRight];
+        [worker setUnderlineStyle:NSUnderlineStyleThick andColor:[UIColor whiteColor]];
+        [worker setStrokeWidth:3 andColor:[UIColor purpleColor]];
 
     }];
 </code></pre>
@@ -102,7 +104,8 @@
     <p>LMAttributedString类目前定义是三个方法</p>
 
     <blockquote>
-<pre><code>+(instancetype) creatAttrubutedString;
+<pre><code>
+    +(instancetype) creatAttrubutedString;
 
     -(LMAttributedString *)setAttributes:(LMSetTypeBlock) block;
 
@@ -123,11 +126,12 @@
 
     <p><code>-(LMAttributedString *)setAttributes:(LMSetTypeBlock) block;</code>方法的实现</p>
 
-<pre><code>-(LMAttributedString *)setAttributes:(LMSetTypeBlock)block{
-    NSCParameterAssert(block != NULL);
-    LMAttributeWorker *worker = [[LMAttributeWorker alloc] initWithAttributedString:self];
-    block(worker);
-    return self;
+<pre><code>
+    -(LMAttributedString *)setAttributes:(LMSetTypeBlock)block{
+        NSCParameterAssert(block != NULL);
+        LMAttributeWorker *worker = [[LMAttributeWorker alloc] initWithAttributedString:self];
+        block(worker);
+        return self;
     }
 
 </code></pre>
@@ -145,18 +149,19 @@
 
     <p>该对象准守一个<code>LMAttributeWork</code>协议,类里实现协议的方法。</p>
 
-<pre><code>-(void)setString:(NSString *)string{
-    if (self.setTextCount &gt; 0) {
-    return;
-    }
-    NSMutableAttributedString *abString = [[NSMutableAttributedString alloc] initWithString:string];
-    [self.attributedString.string appendAttributedString:abString];
-    self.setTextCount++;
+<pre><code>
+    -(void)setString:(NSString *)string{
+        if (self.setTextCount &gt; 0) {
+            return;
+        }
+        NSMutableAttributedString *abString = [[NSMutableAttributedString alloc] initWithString:string];
+        [self.attributedString.string appendAttributedString:abString];
+        self.setTextCount++;
     }
 
     -(void)setFont:(UIFont *)font{
-    LMNeedSetStringAssert
-    [self.attributedString.string addAttribute:NSFontAttributeName value:font range:[self stringRange]];
+        LMNeedSetStringAssert
+        [self.attributedString.string addAttribute:NSFontAttributeName value:font range:[self stringRange]];
     }
     .
     .
@@ -209,11 +214,11 @@
 <!--侧边栏-->
 <div id="sidebar">
     <ul>
-        <li><a href="">Objective-C</a></li>
-        <li><a href="">Swift</a></li>
-        <li><a href="">HTML5</a></li>
-        <li><a href="">CSS</a></li>
-        <li><a href="">JavaScript</a></li>
+        <li><a href="../../../special/special_OC.html">Objective-C</a></li>
+        <li><a href="../../../special/special_swift.html">Swift</a></li>
+        <li><a href="../../../special/special_HTML5.html">HTML5</a></li>
+        <li><a href="../../../special/special_css.html">CSS</a></li>
+        <li><a href="../../../special/special_js.html">JavaScript</a></li>
     </ul>
 </div>
 
