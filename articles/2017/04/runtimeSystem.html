@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>关于运行时系统</title>
+    <meta charset="utf-8">
+    <script src="../../../JS/jQuery.js" type="text/javascript"></script>
+    <script src="../../../JS/main.js"></script>
+    <!--常规化重置CSS 保留部分原有的样式-->
+    <link rel="stylesheet" href="../../../CSS/CSSReset.css">
+    <link rel="stylesheet" href="../../../CSS/main.css">
+    <!--markdown生成的代码-->
+    <link rel="stylesheet" href="../../../CSS/markDown.css">
+
+    <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
+    <script src="../../../JS/article.js"></script>
+    <link rel="stylesheet" href="../../../CSS/article.css">
+    <link rel="stylesheet" href="../../../styles/default.css">
+    <script src="../../../JS/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="shortcut icon" href="../../../Images/bitbug_favicon.ico" />
+</head>
+<body>
+<div>
+    <nav id="nav">
+        <div class="logo"><a href=""></a></div>
+        <ul>
+            <li><a href="../../../index.html" >首页</a></li>
+            <li><a href="../../../about_me.html" >About</a></li>
+            <li id="sidebar_trigger"><a href="javascript:void(0);" >专题菜单</a></li>
+        </ul>
+    </nav>
+</div>
+<!-- 内容  -->
+<div class="markdown-body">
+    <h1 id="toc_0">运行时系统</h1>
+
+    <blockquote>
+        <p>用Objective-C等面向对象语言编程时，“对象”就是“基本构建单元”，开发者可以通过对象来存储并传递数据。在对象之间传递数据并执行任务的过程叫做“消息传递”。当程序运行起来以后，为其提供相关支持的代码叫做“Objective-C运行期系统”，它提供了一些事得对象之间能够传递消息的重要函数，并且包括创建类实例所用的全部逻辑。</p>
+    </blockquote>
+
+    <h2 id="toc_1">1.概括来说OC对象消息传递中具有下列关键元素</h2>
+
+    <blockquote>
+        <h4 id="toc_2">消息：向对象/类发送的名称(选择器)和一系列参数</h4>
+
+        <h4 id="toc_3">方法：OC中的类或实例方法，其声明中含有名称、输入参数、返回值和方法签名（即输入参数和返回值得数据类型）；</h4>
+
+        <h4 id="toc_4">方法绑定：接收想指定接收器发送的消息并寻找和执行适当方法的处理过程。OC运行时系统在调用方法时，会以动态绑定方式处理消息。</h4>
+    </blockquote>
+
+    <hr/>
+
+    <p><strong>1.消息由接收者，选择子及参数构成。给某对象“发送消息”（invoke a method）也就相当于在该对象上调用方法。</strong></p>
+
+<pre><code>
+    //1.self是接收者 2.messageName:是选择子 3.选择子和参数合起来称为“消息”
+    id returnValue = [self messageName:@&quot;messageValue&quot;];
+</code></pre>
+
+    <p><strong>2.发给某对象的全部消息都要由“动态消息派发系统”来处理，该系统会查出对应的方法，并执行其代码。</strong><br/>
+        编译器看到消息后，会将上面转换为一条标准的C语言函数调用。<br/>
+        第一个参数是接收者 第二个参数是选择子 后面的参数就是消息中的参数<br/>
+        <code>void objc_msgSend(id self,SEL cmd,....);</code><br/>
+        <code>id objc_returnValue = objc_msgSend(self,@selector(messageName:),@&quot;messageValue&quot;);</code></p>
+
+    <p>执行过程 objc_msgSend 会根据接收者和选择子的类型来调用适当的方法<br/>
+        *  1.在接收者所在的类中搜其“方法列表”，找到相符的方法，就跳至其实现代码。<br/>
+        *  2.找不到就沿着继承体系继续往上找，等找到合适的方法后再跳转；<br/>
+        *  3.如果最终还是找不到相符的，就执行“消息转发”操作</p>
+
+    <hr/>
+
+    <h3 id="toc_5">2.消息转发机制</h3>
+
+    <blockquote>
+        <p>若想令类能理解某条消息，我们必须以程序代码实现出对应的方法才行。但是，在编译期向类发送了无法解读的消息不会报错，因为<strong>运行时系统</strong>可以继续向类中添加方法，所以编译器编译时无法确定类中到底会不会有某个方法实现。当对象接受到无法解读的消息后，就会启动“<strong>消息转发</strong>”机制。</p>
+    </blockquote>
+
+    <p><img src="../../../Images/消息转发.png" alt="消息转发"/>￼</p>
+
+    <p>上图是消息转发过程:</p>
+
+    <h3 id="toc_6">1.对象在收到无法解读的消息后，首先调用其所属类的类方法。sel是无法响应的选择子。其返回值表示这个类是否能新增一个实例方法用以处理此选择子。</h3>
+
+<pre><code>
+    //无法响应的实例方法
+    +(BOOL)resolveInstanceMethod:(SEL)sel;
+    //无法响应的类方法
+    +(BOOL)resolveClassMethod:(SEL)sel;
+</code></pre>
+
+<pre><code>
+    id absoluteValue(id self,SEL _cmd, id value){
+        NSInteger intVal = [value integerValue];
+        if (intVal &lt; 0) {
+            return [NSNumber numberWithInteger:(intVal * -1)];
+        }
+        return value;
+    }
+
+    ///动态添加实例方法方法
+    +(BOOL) resolveInstanceMethod:(SEL)sel{
+        NSString *method = NSStringFromSelector(sel);
+        if ([method hasPrefix:@&quot;absoluteValue&quot;]) {
+            class_addMethod([self class], sel, (IMP)absoluteValue, &quot;@@:@&quot;);
+            NSLog(@&quot;动态添加方法 方法名:%@&quot;,method);
+         return YES;
+        }
+        return NO;
+    }
+</code></pre>
+
+    <h3 id="toc_7">2.后备接收者</h3>
+
+    <p><strong>当前接受方法对象还有第二次机会处理未知的选择子，在这一步运行期系统会问该对象：能不能把这条消息转给其他接收者处理。</strong></p>
+
+<pre><code class="language-Objective-C">
+    //快速转发
+    //将该方法转给其他对象，从而实现快速转发
+    -(id)forwardingTargetForSelector:(SEL)aSelector;
+</code></pre>
+
+<pre><code>
+    - (id)forwardingTargetForSelector:(SEL)aSelector
+    {
+        if (aSelector == @selector(sendMessage:)) {
+            return [LMMessageForwarding new];
+        }
+        return nil;
+    }
+</code></pre>
+
+    <h3 id="toc_8">3.启动完整的消息转发</h3>
+
+<pre><code>
+    //该方法能使对象能够使用消息的全部内容(目标，方法名，参数)
+    -(void)forwardInvocation:(NSInvocation *)anInvocation;
+</code></pre>
+
+    <p>还有一个很重要的问题，我们必须重写以下方法：</p>
+
+<pre><code>- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector;
+</code></pre>
+
+    <p>消息转发机制使用从这个方法中获取的信息来创建NSInvocation对象。因此我们必须重写这个方法，为给定的selector提供一个合适的方法签名。</p>
+
+<pre><code>
+    - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
+        NSMethodSignature *signature = [super methodSignatureForSelector:aSelector];
+
+        if (!signature) {
+            if ([LMClass instancesRespondToSelector:aSelector]) {
+                signature = [SUTRuntimeMethodHelper instanceMethodSignatureForSelector:aSelector];
+            }
+        }
+
+        return signature;
+    }
+
+    - (void)forwardInvocation:(NSInvocation *)anInvocation {
+        if ([LMClass instancesRespondToSelector:anInvocation.selector]) {
+            [anInvocation invokeWithTarget:_class];
+        }
+    }
+</code></pre>
+
+    <p>注意：<code>forwardInvocation:</code> 必须要经过 <code>methodSignatureForSelector:</code>方法来获得一个<code>NSInvocation</code>，开销比较大。苹果在 forwardingTargetForSelector 的discussion中也说这个方法是一个相对开销多的多的方法</p>
+
+    <p>接受者在每一步中均有机会处理消息。步骤越往后，处理消息的代价越大。</p>
+
+    <h2 id="toc_9">2.运行时动态概念</h2>
+
+    <p>运行时系统通过动态类型功能，可以在运行程序时决定对象的类型，因而可以使运行时因素能够在程序中指定使用哪种对象。</p>
+
+<pre><code>
+    //当使用静态方式设置变量的类型时，变量的类型就由它的声明决定。
+    LMClass *class
+
+    //动态声明，该变量的类型是在运行时确定的
+    id class
+</code></pre>
+
+    <p>动态绑定是指在运行程序时（而不是在编译时）将消息与方法对应起来的处理过程</p>
+
+    <h2 id="toc_10"></h2>
+
+    <p>OC对象收到消息后，究竟会调用何种方法需要在运行期才能解析出来，所以与给定的选择子名称相对应的方法可以在运行期改变，也可以在运行期添加新方法。</p>
+
+    <p><strong>动态创建方法</strong><br/>
+        <code>class_addMethod</code></p>
+
+<pre><code>
+    //使用运行时系统创建类
+    //1.以动态方式穿件一个类
+    Class dynaClass = objc_allocateClassPair([NSObject class], &quot;LMDynaClass&quot;, 0);
+    //2.以动态方式添加一个方法,使用已有方法（description）获取特征
+    Method description = class_getInstanceMethod([NSObject class], @selector(description));
+    const char *types = method_getTypeEncoding(description);
+    //class_addMethod(那个类添加新方法, SEL, 函数指针, 类型编码) 动态在类同添加方法
+    class_addMethod(dynaClass, @selector(getLMString), (IMP)getLMString, types);
+
+    ///注册这个动态类
+    objc_registerClassPair(dynaClass);
+
+</code></pre>
+
+    <p><strong>动态跟换方法</strong><br/>
+        <code>method_exchangeImplementations</code></p>
+
+<pre><code>
+    Method originalMethod = class_getInstanceMethod([NSStringclass], @selector(lowercaseString));
+    Method swappedMethod = class_getInstanceMethod([NSString class], @selector(uppercaseString));
+    //调用method_exchangeImplementations 交换
+    method_exchangeImplementations(originalMethod, swappedMethod);
+    //
+    NSString *string = @&quot;This is The String&quot;;
+    //小写变大写方法
+    NSString *lowercaseString = [string lowercaseString];
+    //大写方法变小写
+    NSString *uppercaseString = [string uppercaseString];
+
+    NSLog(@&quot;low= %@\n upp = %@&quot;,lowercaseString,uppercaseString);
+
+    Method lowString = class_getInstanceMethod([NSString class], @selector(lowercaseString));
+    Method lm_lowString = class_getInstanceMethod([NSString class], @selector(lm_lowercaseString));
+
+    method_exchangeImplementations(lowString, lm_lowString);
+
+    NSString *lowStr = [string lowercaseString];
+
+    NSLog(@&quot;lowStr - &gt;%@&quot;,lowStr)
+</code></pre>
+
+<pre><code>
+    -(NSString *)lm_lowercaseString{
+        //看上去想死循环 ，其实这方法是准备和loweercaseString互换，运行时会调换
+        //lm_lowercaseString 实际调用了 lowercaseString方法
+        NSString *lowercase = [self lm_lowercaseString];
+        NSLog(@&quot;%@ =&gt; %@&quot;,self, lowercase);
+        return lowercase;
+    }
+</code></pre>
+
+    <h2 id="toc_11">3.运行时系统的结构</h2>
+
+    <p>OC的运行时系统由两个主要部分构成：编译器和运行系统库。</p>
+
+    <p>编译器的作用是接收输入的源代码，生成使用了运行时系统库的代码，从而得到合法的、可执行的OC程序。</p>
+
+    <blockquote>
+        <p>OC语言中的面向对象元素和动态特性都是通过运行时系统实现的。概括来说，运行时系统由下列部分组成：</p>
+
+        <blockquote>
+            <p>类元素（接口、实现代码、协议、分类、方法、属性、实例变量）<br/>
+                类实例（对象）<br/>
+                对象消息传递（包括动态类型和动态绑定）<br/>
+                动态方法决议<br/>
+                动态加载<br/>
+                对象内省</p>
+        </blockquote>
+    </blockquote>
+
+    <h3 id="toc_12">3.1测试类创建实例显示其数据</h3>
+
+    <p>关于实例与类的指针解释可以看回这一章节：<a href="http://www.jianshu.com/p/cd3ed2b6bdd4">对Objectiv-C的一些指针的理解</a></p>
+
+<pre><code>
+    LMTestClass *tc1 = [[LMTestClass alloc] init];
+    tc1-&gt;myInt = 0xa5a5a5a5;
+    LMTestClass *tc2 = [[LMTestClass alloc] init];
+    tc2-&gt;myInt = 0xc3c3c3c3;
+    long tc1Size = class_getInstanceSize([LMTestClass class]);
+    NSData *obj1Data = [NSData dataWithBytes:(__bridge const void *)(tc1) length:tc1Size];
+    NSData *obj2Data = [NSData dataWithBytes:(__bridge const void*)(tc2)  length:tc1Size];
+    NSLog(@&quot;LMTestClass object tc1 contains %@&quot;, obj1Data);
+    NSLog(@&quot;LMTestClass object tc2 contains %@&quot;, obj2Data);
+    NSLog(@“LMTestClass Memory address = %p&quot;,[LMTestClass class]);
+</code></pre>
+
+    <p><strong>输出结果</strong><br/>
+        <code><br/>
+            LMTestClass object tc1 contains &lt;3874e000 01000000 a5a5a5a5 00000000&gt;<br/>
+            LMTestClass object tc2 contains &lt;3874e000 01000000 c3c3c3c3 00000000<br/>
+            LMTestClass Memory address = 0x100e07438<br/>
+        </code></p>
+
+    <p>从输出结果可以看到<code>3874e000 01000000</code> 是isa指针，指向类。  <code>a5a5a5a5 00000000</code>是实例变量的值<br/>
+        <code>0x100e07438</code> 和 <code>3874e000 01000000</code> 地址是一样，在mac pro中使用翻转的字节顺序存储数据</p>
+
+    <p>从结果可以看出，实例对象中存在一个isa指针指向类，和存储含有实例变量的长度可变数据指针。</p>
+
+    <h3 id="toc_13">3.2.实现运行时系统的对象消息传递</h3>
+
+    <p>运行时系统库数据类型分为下列几类：<br/>
+        类定义数据结构（类、方法、实例变量、分类、IMP、和SEL等）<br/>
+        实例数据类型（id、objc_object和objc_super）<br/>
+        值（BOOL）</p>
+
+<pre><code>
+    对象的类定义（objc_getClass）
+    类的父类（class_getSuperclass）
+    对象的元类定义（objc_getMetaClass）
+    类的名称（class_getName）
+    类的版本信息（class_getVersion）
+    以字节为单位的类尺寸（class_getInstanceSize）
+    类的实例变量列表（class_copyIvarList）
+    类的方法列表（class_copyMethodList）
+    类的协议列表（class_copyProtocoList）
+    类的属性列表（class_copyProperyList）
+</code></pre>
+
+    <p>当程序向对象发送消息时，运行时系统会通过自定义代码中的类方法缓存和虚函数表查找类的实例方法。为了找到相应的方法，运行时系统会搜索整个类层次结构，找到该方法后，它就会执行该方法的实现代码。</p>
+
+    <p><img src="../../../Images/运行时系统中的消息传递操作.jpg" alt="运行时系统中的消息传递操作"/>￼</p>
+
+    <p>元类是一种特殊的类对象，运行时系统使用其中含有的信息能够找到并调用类方法。每个类都拥有独一无二的元类。</p>
+
+    <p>对象的isa指针指向描述该对象的类，因此可使用该变量访问这个对象的实例方法、实例变量等。</p>
+
+    <p><strong>上码</strong></p>
+
+<pre><code>
+    //获取元类数据
+    id metaClass = objc_getMetaClass(&quot;LMTestClass&quot;);
+    long mclzSize = class_getInstanceSize([metaClass class]);
+    NSData *mclzData = [NSData dataWithBytes:(__bridge const void * _Nullable)(metaClass) length:mclzSize];
+    NSLog(@&quot;LMTestClass metaClass address:%@&quot;,mclzData);
+
+    long objSize = class_getInstanceSize([NSObject class]);
+    NSData *objData = [NSData dataWithBytes:(__bridge const void * _Nullable)([NSObject class]) length:objSize];
+    NSLog(@&quot;NSObject address : %@&quot;, objData);
+
+    id objMetaClass = objc_getMetaClass(&quot;NSObject&quot;);
+    long objMetaSize = class_getInstanceSize([objMetaClass class]);
+    NSData *objMetaData = [NSData dataWithBytes:(__bridge const void * _Nullable)(objMetaClass) length:objMetaSize];
+    NSLog(@&quot;NSObject MetaClass : %@&quot;,objMetaData);
+</code></pre>
+
+    <p>LMTestClass元类带有一个指向父类元类的指针<code>088eb808 01000000</code><br/>
+        <code><br/>
+            //LMTestClass metaClass<br/>
+            LMTestClass metaClass address:&lt;088eb808 01000000 088eb808 01000000 e05d1100 80610000 07000000 01000000 00af0700 00610000&gt;<br/>
+        </code></p>
+
+    <p><code><br/>
+        //--NSObject 地址<br/>
+        NSObject address : &lt;088eb808 01000000&gt;<br/>
+    </code></p>
+
+    <p>因为NSObject是根类，所以它的元类isa指针指向自己<br/>
+        <code><br/>
+            //NSObject 元类<br/>
+            NSObject MetaClass : &lt;088eb808 01000000 588eb808 01000000 e005d0ed c77f0000 0f000000 02000000 00b00700 80600000&gt;<br/>
+        </code></p>
+
+</div>
+<!--页脚-->
+<footer>
+    <ul class="share-group">
+        <li><a href="https://github.com/lemon365189523" target="_blank"><img src="../../../Images/github.png" ></a></li>
+        <li><a href="http://weibo.com/u/1936474822?is_all=1" target="_blank"><img src="../../../Images/sina.png" ></a></li>
+        <li><a href="javascript:void(0);"  id="share_qq"><img src="../../../Images/QQ.png" ></a></li>
+    </ul>
+    <div class="copy">
+        &copy 2017 Lemon
+    </div>
+</footer>
+<!--遮盖-->
+<div class="mask"></div>
+<!--侧边栏-->
+<div id="sidebar">
+    <ul>
+        <li><a href="../../../special/special_OC.html">Objective-C</a></li>
+        <li><a href="../../../special/special_swift.html">Swift</a></li>
+        <li><a href="../../../special/special_HTML5.html">HTML5</a></li>
+        <li><a href="../../../special/special_css.html">CSS</a></li>
+        <li><a href="../../../special/special_js.html">JavaScript</a></li>
+    </ul>
+</div>
+
+<button id="back-to-top">返回顶部</button>
+
+</body>
+</html>
