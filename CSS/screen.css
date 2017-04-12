@@ -1,0 +1,64 @@
+/* media查询，设置htmlfont-size值 */
+@media screen and (max-width: 320px) {
+    /*设备宽度在320区间的样式*/
+    html {
+
+        font-size: 42.666666666667px;
+    }
+}
+
+@media screen and (min-width: 321px) and (max-width: 375px) {
+    /*设备宽度在321-375区间的样式(iphone6)*/
+    html {
+        font-size: 50px;
+    }
+}
+
+@media screen and (min-width: 376px) and (max-width: 414px) {
+    /*设备宽度在376-414区间的样式(iphone6+)*/
+    html {
+        font-size: 55.2px;
+    }
+}
+
+@media screen and (min-width: 415px) and (max-width: 480px) {
+    /*设备宽度在415-480区间的样式*/
+    html {
+        font-size: 64px;
+    }
+}
+
+@media screen and (min-width: 481px) and (max-width: 540px) {
+    /*设备宽度在481-540区间的样式*/
+    html {
+        font-size: 72px;
+    }
+}
+
+@media screen and (min-width: 541px) and (max-width: 640px) {
+    /*设备宽度在541-640区间的样式*/
+    html {
+        font-size: 85.3333333333333px;
+    }
+}
+
+@media screen and (min-width: 641px) and (max-width: 720px) {
+    /*设备宽度在641-720区间的样式*/
+    html {
+        font-size: 96px;
+    }
+}
+
+@media screen and (min-width: 721px) and (max-width: 750px) {
+    /*设备宽度在721-750区间的样式*/
+    html {
+        font-size: 100px;
+    }
+}
+
+@media screen and (min-width: 751px) {
+    /*设备宽度在751以上的样式*/
+    html {
+        font-size: 100px;
+    }
+}
