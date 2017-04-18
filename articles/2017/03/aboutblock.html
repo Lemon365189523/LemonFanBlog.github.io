@@ -217,49 +217,49 @@
 <pre><code>
     //block是一个结构体
     struct __main_block_impl_0 {
-    struct __block_impl impl;
-    struct __main_block_desc_0* Desc;
-    int a;
-    //Block结构体的初始化方法
-    __main_block_impl_0(void *fp, struct __main_block_desc_0 *desc, int _a, int flags=0) : a(_a) {
-    /*
-    block也是OC的对象
-    _NSConcreteStackBlock 保存在栈中的block，出栈时会被销毁
-    _NSConcreteGlobalBlock 全局的静态block，不会访问任何外部变量
-    _NSConcreteMallocBlock 保存在堆中的block，当引用计数为0时会被销毁
-    */
+        struct __block_impl impl;
+        struct __main_block_desc_0* Desc;
+        int a;
+        //Block结构体的初始化方法
+        __main_block_impl_0(void *fp, struct __main_block_desc_0 *desc, int _a, int flags=0) : a(_a) {
+            /*
+            block也是OC的对象
+            _NSConcreteStackBlock 保存在栈中的block，出栈时会被销毁
+            _NSConcreteGlobalBlock 全局的静态block，不会访问任何外部变量
+            _NSConcreteMallocBlock 保存在堆中的block，当引用计数为0时会被销毁
+            */
 
-    impl.isa = &amp;_NSConcreteStackBlock;
-    impl.Flags = flags;
-    impl.FuncPtr = fp;//函数指针，也就是block所需要执行的代码段，真正存的地址
-    Desc = desc;
-    }
+            impl.isa = &amp;_NSConcreteStackBlock;
+            impl.Flags = flags;
+            impl.FuncPtr = fp;//函数指针，也就是block所需要执行的代码段，真正存的地址
+        Desc = desc;
+        }
     };
     //block会持有block里的对象或数据
     static void __main_block_func_0(struct __main_block_impl_0 *__cself) {
-    int a = __cself-&gt;a; // bound by copy
+        int a = __cself-&gt;a; // bound by copy
 
-    printf(&quot;%d\n&quot;, a);
+        printf(&quot;%d\n&quot;, a);
     }
     //block创建空间方法
     static struct __main_block_desc_0 {
-    size_t reserved;
-    size_t Block_size;
+        size_t reserved;
+        size_t Block_size;
     } __main_block_desc_0_DATA = { 0, sizeof(struct __main_block_impl_0)};
     int main(int argc, const char * argv[]) {
     /* @autoreleasepool */ { __AtAutoreleasePool __autoreleasepool;
 
-    int a = 10;
-    //初始化block
-    void (*block)() = ((void (*)())&amp;__main_block_impl_0((void *)__main_block_func_0, &amp;__main_block_desc_0_DATA, a));
+            int a = 10;
+            //初始化block
+            void (*block)() = ((void (*)())&amp;__main_block_impl_0((void *)__main_block_func_0, &amp;__main_block_desc_0_DATA, a));
 
 
 
-    a = 20;
+            a = 20;
 
-    ((void (*)(__block_impl *))((__block_impl *)block)-&gt;FuncPtr)((__block_impl *)block);
-    }
-    return 0;
+            ((void (*)(__block_impl *))((__block_impl *)block)-&gt;FuncPtr)((__block_impl *)block);
+        }
+        return 0;
     }
 </code></pre>
 
