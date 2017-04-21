@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>React.js 关于组件</title>
+    <meta charset="utf-8">
+    <script src="../../../JS/jQuery.js" type="text/javascript"></script>
+    <script src="../../../JS/main.js"></script>
+    <!--常规化重置CSS 保留部分原有的样式-->
+    <link rel="stylesheet" href="../../../CSS/CSSReset.css">
+    <link rel="stylesheet" href="../../../CSS/main.css">
+    <!--markdown生成的代码-->
+    <link rel="stylesheet" href="../../../CSS/markDown.css">
+
+    <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
+    <script src="../../../JS/article.js"></script>
+    <link rel="stylesheet" href="../../../CSS/article.css">
+    <link rel="stylesheet" href="../../../styles/default.css">
+    <script src="../../../JS/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="shortcut icon" href="../../../Images/bitbug_favicon.ico" />
+</head>
+<body>
+<div>
+    <nav id="nav">
+        <div class="logo"><a href=""></a></div>
+        <ul>
+            <li><a href="../../../index.html" >首页</a></li>
+            <li><a href="../../../about_me.html" >About</a></li>
+            <li id="sidebar_trigger"><a href="javascript:void(0);" >专题菜单</a></li>
+        </ul>
+    </nav>
+</div>	
+<!-- 内容  -->
+<div class="markdown-body">
+    <h1 id="toc_0">React.js 关于组件</h1>
+
+    <p><strong>关于组件的方法</strong><br/>
+        * 设置状态：setState<br/>
+        * 替换状态：replaceState<br/>
+        * 设置属性：setProps<br/>
+        * 替换属性：replaceProps<br/>
+        * 强制更新：forceUpdate<br/>
+        * 获取DOM节点：findDOMNode<br/>
+        * 判断组件挂载状态：isMounted</p>
+
+    <h3 id="toc_1">1.setState</h3>
+
+    <pre><code>setState(object nextState[, function callback])
+</code></pre>
+
+    <p>参数说明<br/>
+        nextState，将要设置的新状态，该状态会和当前的state合并<br/>
+        callback，可选参数，回调函数。该函数会在setState设置成功，且组件重新渲染后调用。<br/>
+        合并nextState和当前state，并重新渲染组件。setState是React事件处理函数中和请求回调函数中触发UI更新的主要方法。<br/>
+        关于setState<br/>
+        不能在组件内部通过this.state修改状态，因为该状态会在调用setState()后被替换。<br/>
+        setState()并不会立即改变this.state，而是创建一个即将处理的state。setState()并不一定是同步的，为了提升性能React会批量执行state和DOM渲染。<br/>
+        setState()总是会触发一次组件重绘，除非在shouldComponentUpdate()中实现了一些条件渲染逻辑。</p>
+
+    <pre><code>var Counter = React.createClass({
+    getInitialState: function () {
+        return {clickCount : 0};
+    },
+    handleClick: function () {
+        this.setState(function (state) {
+            return {clickCount: state.clickCount + 1};
+        });
+    },
+    render: function () {
+
+        return (
+            &lt;h2 onClick={this.handleClick}&gt;点我!:点击次数:{this.state.clickCount}&lt;/h2&gt;
+        )
+    }
+})
+</code></pre>
+
+    <p><code>getInitialState</code>设置state的初始值</p>
+
+    <h3 id="toc_2">replaceState</h3>
+
+    <pre><code>replaceState(object nextState[, function callback])
+</code></pre>
+
+    <p>nextState，将要设置的新状态，该状态会替换当前的state。<br/>
+        callback，可选参数，回调函数。该函数会在replaceState设置成功，且组件重新渲染后调用。<br/>
+        replaceState()方法与setState()类似，但是方法只会保留nextState中状态，原state不在nextState中的状态都会被删除。<br/>
+        <strong>注意：这个方法在ES6类组件扩展不可用，它可能会在未来某个React版本中删除</strong></p>
+
+    <h3 id="toc_3">设置属性：setProps</h3>
+
+    <p><code>setProps(object nextProps[, function callback])</code><br/>
+        nextProps，将要设置的新属性，该状态会和当前的props合并<br/>
+        callback，可选参数，回调函数。该函数会在setProps设置成功，且组件重新渲染后调用。<br/>
+        设置组件属性，并重新渲染组件。<br/>
+        props相当于组件的数据流，它总是会从父组件向下传递至所有的子组件中。当和一个外部的JavaScript应用集成时，我们可能会需要向组件传递数据或通知React.render()组件需要重新渲染，可以使用setProps()。<br/>
+        更新组件，我可以在节点上再次调用React.render()，也可以通过setProps()方法改变组件属性，触发组件重新渲染。</p>
+
+    <h3 id="toc_4">替换属性：replaceProps</h3>
+
+    <p><code>replaceProps(object nextProps[, function callback])</code><br/>
+        nextProps，将要设置的新属性，该属性会替换当前的props。<br/>
+        callback，可选参数，回调函数。该函数会在replaceProps设置成功，且组件重新渲染后调用。<br/>
+        replaceProps()方法与setProps类似，但它会删除原有props</p>
+
+    <h3 id="toc_5">强制更新：forceUpdate</h3>
+
+    <p><code>forceUpdate([function callback])</code><br/>
+        参数说明<br/>
+        callback，可选参数，回调函数。该函数会在组件render()方法调用后调用。<br/>
+        forceUpdate()方法会使组件调用自身的render()方法重新渲染组件，组件的子组件也会调用自己的render()。但是，组件重新渲染时，依然会读取this.props和this.state，如果状态没有改变，那么React只会更新DOM。<br/>
+        forceUpdate()方法适用于this.props和this.state之外的组件重绘（如：修改了this.state后），通过该方法通知React需要调用render()<br/>
+        一般来说，应该尽量避免使用forceUpdate()，而仅从this.props和this.state中读取状态并由React触发render()调用。</p>
+
+    <h3 id="toc_6">获取DOM节点：findDOMNode</h3>
+
+    <p><code>DOMElement findDOMNode()</code><br/>
+        返回值：DOM元素DOMElement<br/>
+        如果组件已经挂载到DOM中，该方法返回对应的本地浏览器 DOM 元素。当render返回null 或 false时，this.findDOMNode()也会返回null。从DOM 中读取值的时候，该方法很有用，如：获取表单字段的值和做一些 DOM 操作。</p>
+
+    <h3 id="toc_7">判断组件挂载状态：isMounted</h3>
+
+    <p><code>bool isMounted()</code><br/>
+        返回值：true或false，表示组件是否已挂载到DOM中<br/>
+        isMounted()方法用于判断组件是否已挂载到DOM中。可以使用该方法保证了setState()和forceUpdate()在异步场景下的调用不会出错。</p>
+
+    <hr/>
+
+    <h2 id="toc_8">组件的组合、嵌套和组件树</h2>
+
+    <pre><code>/**
+ * Created by kadfwj on 2017/4/21.
+ */
+import React, {Component} from &#39;react&#39;;
+import ReactDOM from &#39;react-dom&#39;;
+
+class Title extends Component{
+    render (){
+        return (
+            &lt;h1&gt;这是title&lt;/h1&gt;
+        )
+    }
+}
+
+class Header extends Component {
+    render () {
+        return (
+            &lt;div&gt;
+                &lt;Title /&gt;
+                &lt;h2&gt;这是页头&lt;/h2&gt;
+            &lt;/div&gt;
+        )
+    }
+}
+
+class  Main extends Component {
+    render (){
+        return (
+            &lt;div&gt;
+                &lt;h2&gt;这是填写内容的&lt;/h2&gt;
+            &lt;/div&gt;
+        )
+
+    }
+}
+
+
+class Footer extends Component {
+    render (){
+        return (
+            &lt;div&gt;
+                &lt;h2&gt;这是页脚&lt;/h2&gt;
+            &lt;/div&gt;
+        )
+    }
+}
+
+class  Article extends Component{
+    render (){
+        return (
+            &lt;div&gt;
+                &lt;Header /&gt;
+                &lt;Main /&gt;
+                &lt;Footer /&gt;
+            &lt;/div&gt;
+        )
+    }
+}
+
+//输出组件
+export default  Article;
+</code></pre>
+
+    <p>组件可以和组件组合在一起，组件内部可以使用别的组件。就像普通的 HTML 标签一样使用就可以。这样的组合嵌套，最后构成一个所谓的组件树，就正如上面的例子那样，Article 用了 Header、Main、Footer，Header 又使用了 Title 。</p>
+
+    <h2 id="toc_9">事件监听</h2>
+
+    <pre><code>class Title extends Component{
+    handleClickOnTitle(event){
+       // console.log(&quot;点击title&quot;)
+        console.log(event.target.innerHTML)
+        console.log(this)//打印为null
+    }
+    render (){
+        return (
+            &lt;h1 onClick={this.handleClickOnTitle}&gt;这是title&lt;/h1&gt;
+        )
+    }
+}
+</code></pre>
+
+    <p>没有经过特殊处理的话，这些 on* 的事件监听只能用在普通的 HTML 的标签上，而不能用在组件标签上。也就是说，<code>&lt;Header onClick={…} /&gt;</code>这样的写法不会有什么效果的。这些 on* 的事件监听只能用在普通的 HTML 的标签上，而不能用在组件标签上。<br/>
+        <strong>PS:</strong>但是有办法可以做到这样的绑定。</p>
+
+    <h3 id="toc_10">event对象</h3>
+
+    <p>和普通浏览器一样，事件监听函数会被自动传入一个 event 对象，这个对象和普通的浏览器 event 对象所包含的方法和属性都基本一致。不同的是 React.js 中的 event 对象并不是浏览器提供的，而是它自己内部所构建的。</p>
+
+    <h3 id="toc_11">关于事件中this</h3>
+
+    <p>一般在某个类的实例方法里面的 this 指的是这个实例本身。但是你在上面的 handleClickOnTitle 中把 this 打印出来，你会看到 this 是 null 或者 undefined。</p>
+
+    <p>是因为 <u>React.js</u> 调用你所传给它的方法的时候，并不是通过对象方法的方式调用（<code>this.handleClickOnTitle</code>），而是直接通过函数调用 （<code>handleClickOnTitle</code>），所以事件监听函数内并不能通过 <code>this</code> 获取到实例。</p>
+
+    <p>如果你想在事件函数当中使用当前的实例，你需要手动地将实例方法 <code>bind</code> 到当前实例上再传入给 <u>React.js</u>。</p>
+
+    <pre><code>class Title extends Component {
+  handleClickOnTitle (e) {
+    console.log(this)
+  }
+
+  render () {
+    return (
+      &lt;h1 onClick={this.handleClickOnTitle.bind(this)}&gt;这是title&lt;/h1&gt;
+    )
+  }
+}
+</code></pre>
+
+    <h3 id="toc_12">组件内部传入函数作为参数</h3>
+
+    <pre><code>...
+    onClick(){
+        //组件外部传入的函数参数
+        if (this.props.onClick){
+            this.props.onclick()
+        }
+    }
+
+    render (){
+        const  likeText = this.props.likeText || &#39;点赞&#39;
+        const  unlikeText = this.props.unlikeText || &quot;取消&quot;
+        return (
+            &lt;button onClick={()=&gt; console.log(&#39;按钮被点击&#39;)}&gt;
+                {this.state.isLiked ? likeText:unlikeText}
+            &lt;/button&gt;
+        )
+    }
+
+...
+</code></pre>
+
+    <p>当每次点击按钮的时候，通过 <code>this.props.onClick</code> 获取到这个传进去的函数，然后调用该函数 。但这个行为不是点赞组件自己实现的，而是我们传进去的。所以，一个组件的行为、显示形态都可以用 <code>props</code> 来控制，就可以达到很好的可配置性。</p>
+
+    <h3 id="toc_13">为props添加默认值</h3>
+
+    <pre><code>static defaultProps = {
+   likeText: &#39;取消&#39;,
+   unlikeText: &#39;点赞&#39;
+}
+</code></pre>
+
+    <p>这样我们就不需要判断配置属性是否传进来了：如果没有传进来，会直接使用 defaultProps 中的默认属性。</p>
+
+    <h2 id="toc_14">state vs props</h2>
+
+    <p><code>state</code> 的主要作用是用于组件保存、控制、修改自己的可变状态。<code>state</code> 在组件内部初始化，可以被组件自身修改，而外部不能访问也不能修改。你可以认为 <code>state</code> 是一个局部的、只能被组件自身控制的数据源。<code>state</code> 中状态可以通过 this.setState 方法进行更新，<code>setState</code> 会导致组件的重新渲染。</p>
+
+    <p><code>props</code> 的主要作用是让使用该组件的父组件可以传入参数来配置该组件。它是外部传进来的配置参数，组件内部无法控制也无法修改。除非外部组件主动传入新的 <code>props</code>，否则组件的 <code>props</code> 永远保持不变。</p>
+
+    <h2 id="toc_15">总结</h2>
+
+    <ol>
+        <li>为了使得组件的可定制性更强，在使用组件的时候，可以在标签上加属性来传入配置参数。</li>
+        <li>组件可以在内部通过 this.props 获取到配置参数，组件可以根据 props 的不同来确定自己的显示形态，达到可配置的效果。</li>
+        <li>可以通过给组件添加类属性 defaultProps 来配置默认参数。</li>
+        <li>props 一旦传入，你就不可以在组件内部对它进行修改。但是你可以通过父组件主动重新渲染的方式来传入新的 props，从而达到更新的效果。</li>
+    </ol>
+
+</div>
+<!--页脚-->
+<footer>
+    <ul class="share-group">
+        <li><a href="https://github.com/lemon365189523" target="_blank"><img src="../../../Images/github.png" ></a></li>
+        <li><a href="http://weibo.com/u/1936474822?is_all=1" target="_blank"><img src="../../../Images/sina.png" ></a></li>
+        <li><a href="javascript:void(0);"  id="share_qq"><img src="../../../Images/QQ.png" ></a></li>
+    </ul>
+    <div class="copy">
+        &copy 2017 Lemon
+    </div>
+</footer>
+<!--遮盖-->
+<div class="mask"></div>
+<!--侧边栏-->
+<div id="sidebar">
+    <ul>
+        <li><a href="../../../special/special_OC.html">Objective-C</a></li>
+        <li><a href="../../../special/special_swift.html">Swift</a></li>
+        <li><a href="../../../special/special_HTML5.html">HTML5</a></li>
+        <li><a href="../../../special/special_css.html">CSS</a></li>
+        <li><a href="../../../special/special_js.html">JavaScript</a></li>
+    </ul>
+</div>
+
+<button id="back-to-top">返回顶部</button>
+
+</body>
+</html>
