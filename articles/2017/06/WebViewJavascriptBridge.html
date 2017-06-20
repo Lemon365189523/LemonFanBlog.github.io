@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebViewJavascriptBridge的使用和实现原理</title>
+    <meta charset="utf-8">
+    <script src="../../../JS/jQuery.js" type="text/javascript"></script>
+    <script src="../../../JS/main.js"></script>
+    <!--常规化重置CSS 保留部分原有的样式-->
+    <link rel="stylesheet" href="../../../CSS/CSSReset.css">
+    <link rel="stylesheet" href="../../../CSS/main.css">
+    <!--markdown生成的代码-->
+    <link rel="stylesheet" href="../../../CSS/markDown.css">
+
+    <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
+    <script src="../../../JS/article.js"></script>
+    <link rel="stylesheet" href="../../../CSS/article.css">
+    <link rel="stylesheet" href="../../../styles/default.css">
+    <script src="../../../JS/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="shortcut icon" href="../../../Images/bitbug_favicon.ico" />
+</head>
+<body>
+<div>
+    <nav id="nav">
+        <div class="logo"><a href=""></a></div>
+        <ul>
+            <li><a href="../../../index.html" >首页</a></li>
+            <li><a href="../../../about_me.html" >About</a></li>
+            <li id="sidebar_trigger"><a href="javascript:void(0);" >专题菜单</a></li>
+        </ul>
+    </nav>
+</div>	
+<!-- 内容  -->
+<div class="markdown-body">
+    <h1 id="toc_0">WebViewJavascriptBridge的使用和实现原理</h1>
+
+    <h3 id="toc_1">在HTML添加交互代码</h3>
+
+    <pre><code>&lt;!-- script 嵌入JS代码 --&gt;
+ window.onerror = function(err) {
+   log(&#39;window.onerror: &#39; + err)
+ }
+
+ /*这段代码是固定的，必须要放到js中*/
+ function setupWebViewJavascriptBridge(callback) {
+   if (window.WebViewJavascriptBridge) { return callback(WebViewJavascriptBridge); }
+   if (window.WVJBCallbacks) { return window.WVJBCallbacks.push(callback); }
+   window.WVJBCallbacks = [callback];
+   var WVJBIframe = document.createElement(&#39;iframe&#39;);
+   WVJBIframe.style.display = &#39;none&#39;;
+   //src是js交互的标识码
+   WVJBIframe.src = &#39;kadios://__KAD_BRIDGE_LOADED__&#39;;
+   document.documentElement.appendChild(WVJBIframe);
+   //加载这个方法后就删除自定义的src 让后面重定向url
+   //把iframe一起干掉，既然改变src不会刷新页面，重新创建一个iframe 就会刷新
+   setTimeout(function() { document.documentElement.removeChild(WVJBIframe) }, 0)
+ }
+
+ /*与OC交互的所有JS方法都要放在此处注册，才能调用通过JS调用OC或者让OC调用这里的JS*/
+ setupWebViewJavascriptBridge(function(bridge) {
+   //JS 调用 OC方法 callHandler
+   document.getElementById(&quot;showButton&quot;).onclick = function(e){
+       bridge.callHandler(&#39;goHome:&#39;, {&#39;name&#39;: &#39;lemon&#39; + Math.random()}, function(response) {
+
+       })
+   }
+
+   /*JS给ObjC提供公开的API，在ObjC端可以手动调用JS的这个API。接收ObjC传过来的参数，且可以回调ObjC*/
+   //OC 调用JS registerHandler
+   bridge.registerHandler(&#39;getUserInfos&#39;, function(data, responseCallback) {
+     document.getElementById(&quot;changeTitle&quot;).innerHTML = data;
+     //回调给ObjC
+     responseCallback({&#39;userId&#39;: &#39;123456&#39;, &#39;title&#39;: &#39;Hello World!&#39;})
+   })
+
+ })
+
+</code></pre>
+
+    <h3 id="toc_2">app中使用WebViewJavascriptBridge的代码</h3>
+
+    <pre><code>//创建WebViewJavascriptBridge做为属性
+@property (nonatomic, strong) WebViewJavascriptBridge *bridge;
+</code></pre>
+
+    <pre><code>//给webView建立JS与OC桥梁
+self.bridge = [WebViewJavascriptBridge bridgeForWebView:self.webView];
+//设置代理
+[self.bridge setWebViewDelegate:self ];
+
+// 1.JS主动调用OjbC的方法
+// 这是JS会调用getUserIdFromObjC方法，这是OC注册给JS调用的
+// JS需要回调，当然JS也可以传参数过来。data就是JS所传的参数，不一定需要传
+// OC端通过responseCallback回调JS端，JS就可以得到所需要的数据
+
+[self.bridge registerHandler:@&quot;goHome:&quot; handler:^(id data, WVJBResponseCallback responseCallback) {
+   self.showDataLB.text = [NSString stringWithFormat:@&quot;%@&quot;,data];
+   [self.showDataLB sizeToFit];
+   NSLog(@&quot;goHome:%@&quot;,data);
+}];
+
+
+</code></pre>
+
+    <pre><code>-(void) clickShowButton{
+    //OC调用了js方法
+    [self.bridge callHandler:@&quot;getUserInfos&quot; data:@&quot;我点击了showButton&quot; responseCallback:^(id responseData) {
+        //data是js的回调数据
+        NSLog(@&quot;%@&quot;,responseData);
+    }];
+
+}
+</code></pre>
+
+    <h3 id="toc_3">上面的代码是WebViewJavascriptBridge的基本使用。</h3>
+
+    <h2 id="toc_4">下面是关于WebViewJavascriptBridge的原理</h2>
+
+    <h4 id="toc_5">WebViewJavascriptBridge类的作用是绑定webView，在该类中处理WebView的代理。</h4>
+
+    <h3 id="toc_6">js调用OC的原理</h3>
+
+    <pre><code class="language-OC">+ (instancetype)bridgeForWebView:(WVJB_WEBVIEW_TYPE*)webView {
+    WebViewJavascriptBridge* bridge = [[self alloc] init];
+    [bridge _platformSpecificSetup:webView];
+    return bridge;
+}
+
+- (void) _platformSpecificSetup:(WVJB_WEBVIEW_TYPE*)webView {
+    _webView = webView;
+    _webView.delegate = self;
+    _base = [[WebViewJavascriptBridgeBase alloc] init];
+    //base实例会把该注册事件放进到base的一个消息池子(负责接受多个OC注册事件)中，方便后续处理
+    _base.delegate = self;
+}
+
+</code></pre>
+
+    <h3 id="toc_7">webView</h3>
+
+    <pre><code>//每次在重新定向URL的时候，这个方法就会被触发，通常情况，我们会在这里做一些拦截完成js和本地的间接交互什么的
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    if (webView != _webView) { return YES; }
+    NSURL *url = [request URL];
+    __strong WVJB_WEBVIEW_DELEGATE_TYPE* strongDelegate = _webViewDelegate;
+    //拦截URL看是不是 判断是否是自定义的路径
+    //在html中我们设置了 （WVJBIframe.src = &#39;kadios://__KAD_BRIDGE_LOADED__&#39;;）
+    //isCorrectProcotocolScheme 方法判断 scheme 是否等于 kadios
+    //isBridgeLoadedURL 方法 判断 host 是否等于 __KAD_BRIDGE_LOADED__
+    if ([_base isCorrectProcotocolScheme:url]) {
+        if ([_base isBridgeLoadedURL:url]) {
+            //oc 调用 js
+            //此时执行在工程里面放置的JS文件
+            [_base injectJavascriptFile];
+
+            //由于js函数中一进来便主动触发了registerHandler，所以url变成了 kadios://__KAD_QUEUE_MESSAGE__
+            //文件执行完毕 然后走下面else if
+        } else if ([_base isQueueMessageURL:url]) {
+            //url所以变成了 kadios://__KAD_QUEUE_MESSAGE__
+            // evaluateJavascript:@&quot;WebViewJavascriptBridge._fetchQueue();&quot;
+            //_fetchQueue() 取出消息字典里的内容 在js里面把 字典变成字符串
+            //🌰 [webView stringByEvaluatingJavaScriptFromString:@&quot;document.location.href&quot;]    //获取当前页面的url。
+            //如果不是js调用的 messageQueueString = [];
+            NSString *messageQueueString = [self _evaluateJavascript:[_base webViewJavascriptFetchQueyCommand]];
+            [_base flushMessageQueue:messageQueueString];
+        } else {
+            [_base logUnkownMessage:url];
+        }
+        return NO;
+    } else if (strongDelegate &amp;&amp; [strongDelegate respondsToSelector:@selector(webView:shouldStartLoadWithRequest:navigationType:)]) {
+        return [strongDelegate webView:webView shouldStartLoadWithRequest:request navigationType:navigationType];
+    } else {
+        return YES;
+    }
+}
+</code></pre>
+
+    <h3 id="toc_8">[_base injectJavascriptFile]加载的js文件</h3>
+
+    <pre><code>//js这边 先把方法名字、参数、处理方法保存成一个字典在转成json字符串，在通过UIWebview调用js中某个方法把这个json字符串传到Native中去，同时把这个处理的方法以key-value形式放到一个js的字典中。
+// UIWebView在收到这个json之后，进行数据处理、还有js的回掉的处理方法（就是那个callbackId）处理完成后也会拼成一个key-value字典通过调用js传回去（可以直接调用js）。
+// js在接到这个json后，根据responseId读取responseCallbacks中处理方法进行处理Native code返回的数据。
+
+;(function() {
+    if (window.WebViewJavascriptBridge) { return }
+    var messagingIframe
+    //发送的消息队列
+    var sendMessageQueue = []
+    //接收消息队列
+    var receiveMessageQueue = []
+    //回调映射
+    var messageHandlers = {}
+    //改变 wvjbscheme 和 __WVJB_QUEUE_MESSAGE__ 这连个组合标识 给webview 的 delegate判断用的
+    var CUSTOM_PROTOCOL_SCHEME = &#39;kadios&#39;
+    var QUEUE_HAS_MESSAGE = &#39;__KAD_QUEUE_MESSAGE__&#39;
+    //js 调用 OC 如果有回调会加入这里
+    var responseCallbacks = {}
+    var uniqueId = 1
+    //获取iframe
+    function _createQueueReadyIframe(doc) {
+        messagingIframe = doc.createElement(&#39;iframe&#39;)
+        messagingIframe.style.display = &#39;none&#39;
+        messagingIframe.src = CUSTOM_PROTOCOL_SCHEME + &#39;://&#39; + QUEUE_HAS_MESSAGE
+        //在iframe 最加 src（路径）属性
+        doc.documentElement.appendChild(messagingIframe)
+    }
+
+    function init(messageHandler) {
+        if (WebViewJavascriptBridge._messageHandler) { throw new Error(&#39;WebViewJavascriptBridge.init called twice&#39;) }
+        WebViewJavascriptBridge._messageHandler = messageHandler
+        var receivedMessages = receiveMessageQueue
+        receiveMessageQueue = null
+        for (var i=0; i&lt;receivedMessages.length; i++) {
+            _dispatchMessageFromObjC(receivedMessages[i])
+        }
+    }
+
+    function send(data, responseCallback) {
+        _doSend({ data:data }, responseCallback)
+    }
+    //oc 调用 js
+    function registerHandler(handlerName, handler) {
+        messageHandlers[handlerName] = handler
+    }
+    //js调用oc
+    function callHandler(handlerName, data, responseCallback) {
+        _doSend({ handlerName:handlerName, data:data }, responseCallback)
+    }
+    //js需要触发oc必须调用该方法
+    function _doSend(message, responseCallback) {
+        if (responseCallback) {
+            //callbackId 该事件的id  把回调方法与id绑定
+            var callbackId = &#39;cb_&#39;+(uniqueId++)+&#39;_&#39;+new Date().getTime()
+            responseCallbacks[callbackId] = responseCallback
+            message[&#39;callbackId&#39;] = callbackId
+        }
+        //把字典放到消息队列中
+        sendMessageQueue.push(message)
+        //产生一个url 执行URL重定向
+        messagingIframe.src = CUSTOM_PROTOCOL_SCHEME + &#39;://&#39; + QUEUE_HAS_MESSAGE
+    }
+
+    //sendMessageQueue 里面是消息字典  内容有 handlerName data  callbackId
+    //这方法是取出 sendMessageQueue的内容
+    function _fetchQueue() {
+        var messageQueueString = JSON.stringify(sendMessageQueue)
+        //获取完后吧发送消息队列清空 防止重复调用
+        sendMessageQueue = []
+        return messageQueueString
+    }
+    //js中处理oc的消息 判断oc获取到js端的消息
+    function _dispatchMessageFromObjC(messageJSON) {
+        setTimeout(function _timeoutDispatchMessageFromObjC() {
+            var message = JSON.parse(messageJSON)
+            var messageHandler
+            var responseCallback
+            //判断oc的回调是 response 还是 callback
+            if (message.responseId) {
+                responseCallback = responseCallbacks[message.responseId]
+                if (!responseCallback) { return; }
+                responseCallback(message.responseData)
+                delete responseCallbacks[message.responseId]
+            } else {
+                //js 调用 oc后  oc返回数据
+                if (message.callbackId) {
+                    var callbackResponseId = message.callbackId
+                    responseCallback = function(responseData) {
+                        _doSend({ responseId:callbackResponseId, responseData:responseData })
+                    }
+                }
+                //这段代码 触发js调用 responseCallback
+                var handler = WebViewJavascriptBridge._messageHandler
+                if (message.handlerName) {
+                    handler = messageHandlers[message.handlerName]
+                }
+
+                try {
+                    handler(message.data, responseCallback)
+                } catch(exception) {
+                    if (typeof console != &#39;undefined&#39;) {
+                        console.log(&quot;WebViewJavascriptBridge: WARNING: javascript handler threw.&quot;, message, exception)
+                    }
+                }
+            }
+        })
+    }
+    //OC调用js的方法通过这方法
+    function _handleMessageFromObjC(messageJSON) {
+        if (receiveMessageQueue) {
+            receiveMessageQueue.push(messageJSON)
+        } else {
+            _dispatchMessageFromObjC(messageJSON)
+        }
+    }
+    //js定义 WebViewJavascriptBridge对象
+    window.WebViewJavascriptBridge = {
+        init: init,
+        send: send,
+        registerHandler: registerHandler,
+        callHandler: callHandler,
+        _fetchQueue: _fetchQueue,
+        _handleMessageFromObjC: _handleMessageFromObjC
+    }
+
+    var doc = document
+    _createQueueReadyIframe(doc)
+    var readyEvent = doc.createEvent(&#39;Events&#39;)
+    readyEvent.initEvent(&#39;WebViewJavascriptBridgeReady&#39;)
+    readyEvent.bridge = WebViewJavascriptBridge
+    doc.dispatchEvent(readyEvent)
+})();
+
+</code></pre>
+
+    <h3 id="toc_9">OC调用JS的原理</h3>
+
+    <p>OC调用JS方法使用<code>callHandler</code>方法，该方法把需要的（data，handlerName，callbackId） 封装成字典，然后把字典转为String，然后把该String写入到webView中，实现与js交互。</p>
+
+    <pre><code>- (void)sendData:(id)data responseCallback:(WVJBResponseCallback)responseCallback handlerName:(NSString*)handlerName {
+    //转换成字典
+    NSMutableDictionary* message = [NSMutableDictionary dictionary];
+
+    if (data) {
+        message[@&quot;data&quot;] = data;
+    }
+
+    if (responseCallback) {
+        NSString* callbackId = [NSString stringWithFormat:@&quot;objc_cb_%ld&quot;, ++_uniqueId];
+        self.responseCallbacks[callbackId] = [responseCallback copy];
+        message[@&quot;callbackId&quot;] = callbackId;
+    }
+
+    if (handlerName) {
+        message[@&quot;handlerName&quot;] = handlerName;
+    }
+    [self _queueMessage:message];
+}
+
+
+//webView 写入js  OC调用JS方法
+- (void)_dispatchMessage:(WVJBMessage*)message {
+    NSString *messageJSON = [self _serializeMessage:message pretty:NO];
+    [self _log:@&quot;SEND&quot; json:messageJSON];
+    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\\&quot; withString:@&quot;\\\\&quot;];
+    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\&quot;&quot; withString:@&quot;\\\&quot;&quot;];
+    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\&#39;&quot; withString:@&quot;\\\&#39;&quot;];
+    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\n&quot; withString:@&quot;\\n&quot;];
+    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\r&quot; withString:@&quot;\\r&quot;];
+    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\f&quot; withString:@&quot;\\f&quot;];
+    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\u2028&quot; withString:@&quot;\\u2028&quot;];
+    messageJSON = [messageJSON stringByReplacingOccurrencesOfString:@&quot;\u2029&quot; withString:@&quot;\\u2029&quot;];
+    //调用js中的_handleMessageFromObjC方法
+    NSString* javascriptCommand = [NSString stringWithFormat:@&quot;WebViewJavascriptBridge._handleMessageFromObjC(&#39;%@&#39;);&quot;, messageJSON];
+    if ([[NSThread currentThread] isMainThread]) {
+        [self _evaluateJavascript:javascriptCommand];
+
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [self _evaluateJavascript:javascriptCommand];
+        });
+    }
+}
+</code></pre>
+
+</div>
+<!--页脚-->
+<footer>
+    <ul class="share-group">
+        <li><a href="https://github.com/lemon365189523" target="_blank"><img src="../../../Images/github.png" ></a></li>
+        <li><a href="http://weibo.com/u/1936474822?is_all=1" target="_blank"><img src="../../../Images/sina.png" ></a></li>
+        <li><a href="javascript:void(0);"  id="share_qq"><img src="../../../Images/QQ.png" ></a></li>
+    </ul>
+    <div class="copy">
+        &copy 2017 Lemon
+    </div>
+</footer>
+<!--遮盖-->
+<div class="mask"></div>
+<!--侧边栏-->
+<div id="sidebar">
+    <ul>
+        <li><a href="../../../special/special_OC.html">Objective-C</a></li>
+        <li><a href="../../../special/special_swift.html">Swift</a></li>
+        <li><a href="../../../special/special_HTML5.html">HTML5</a></li>
+        <li><a href="../../../special/special_css.html">CSS</a></li>
+        <li><a href="../../../special/special_js.html">JavaScript</a></li>
+    </ul>
+</div>
+
+<button id="back-to-top">返回顶部</button>
+
+</body>
+</html>
