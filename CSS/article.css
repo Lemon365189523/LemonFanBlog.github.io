@@ -1,0 +1,44 @@
+.article-content
+{
+
+}
+
+body
+{
+    max-width: 100%;
+    padding: 0;
+}
+
+.markdown-body
+{
+    max-width: 800px;
+    padding: 3em;
+    /*水平居中*/
+    margin: 0 auto;
+}
+
+a:visited
+{
+    color: #ffffff;
+}
+
+.sidebar_trigger:visited
+{
+    color: #fff;
+}
+
+nav ul li a, .logo a
+{
+    line-height: 50px;
+    text-decoration: none;
+    display: inline-block;
+    /*继承父元素*/
+    height: inherit;
+    color: #fff;
+}
+
+
+a:hover
+{
+    color: #FFFFFF;
+}

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>iOS点击屏幕的响应链</title>
+    <meta charset="utf-8">
+    <script src="../../../JS/jQuery.js" type="text/javascript"></script>
+    <script src="../../../JS/main.js"></script>
+    <!--常规化重置CSS 保留部分原有的样式-->
+    <link rel="stylesheet" href="../../../CSS/CSSReset.css">
+    <link rel="stylesheet" href="../../../CSS/main.css">
+    <!--markdown生成的代码-->
+    <link rel="stylesheet" href="../../../CSS/markDown.css">
+
+    <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
+    <script src="../../../JS/article.js"></script>
+    <link rel="stylesheet" href="../../../CSS/article.css">
+    <link rel="stylesheet" href="../../../styles/default.css">
+    <script src="../../../JS/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="shortcut icon" href="../../../Images/bitbug_favicon.ico" />
+</head>
+<body>
+<div>
+    <nav id="nav">
+        <div class="logo"><a href=""></a></div>
+        <ul>
+            <li><a href="../../../index.html" >首页</a></li>
+            <li><a href="../../../about_me.html" >About</a></li>
+            <li id="sidebar_trigger"><a href="javascript:void(0);" >专题菜单</a></li>
+        </ul>
+    </nav>
+</div>	
+<!-- 内容  -->
+<div class="markdown-body">
+    <h1 id="toc_0">iOS点击屏幕的响应链</h1>
+
+    <blockquote>
+        <p>响应链，顾名思义，就是有一系列响应对象的集合成的一个层次结构。那什么又是响应对象呢？Cocoa里面规定：凡是继承于UIResponder或者UIResponder的子类的对象都可以作为响应对象，比如UIApplication、UIViewController和UIView。</p>
+    </blockquote>
+
+    <p><strong>在响应用户触摸等事件中，APP具体会通过下面三步来完成操作：</strong></p>
+
+    <ol>
+        <li> 生成事件。当用户点击屏幕时，会产生一个触摸事件，并放入由Application管理的事件队列中，然后在队列中取出最前面的事件交给Window处理。</li>
+        <li> 查找第一响应对象。Window收到事件后会在视图层次结构中找到最适合的一个视图来处理事件，通常一个窗口中最适合处理当前事件的对象称为第一响应对象。</li>
+        <li> 处理事件。通常最后是第一响应对象处理事件，如果第一响应对象无法处理事件，就会把事件传递给下一个响应对象，直到Application。如果Application也无法处理，那就丢弃掉此事件。</li>
+    </ol>
+
+    <h3 id="toc_1">UITouch</h3>
+
+    <p>一次触摸将产生一个UITouch：一个手指离开屏幕前的一系列动作，包含时间戳、所在视图、 力度等信息。<br/>
+        当用户用一根触摸屏幕时，会创建一个与手指相关联的UITouch对象 <br/>
+        • 一根手指对应一个UITouch对象 <br/>
+        • UITouch的作用   保存着跟手指相关的信息，比如触摸的位置、时间、阶段 <br/>
+        • 当手指移动时，系统会更新同一个UITouch对象，使之能够一直保存该手指在的触摸位置<br/>
+        • 当手指离开屏幕时，系统会销毁相应的UITouch对象</p>
+
+    <h3 id="toc_2">UIEvent</h3>
+
+    <p>多个UITouch组成，也就是多个触摸组成。 一个event指的是第一个手指开始触摸到最后一个手指离开屏幕这段时间所有UITouch的总和。<br/>
+        UIEvent：称为事件对象，记录事件产生的时刻和类型<br/>
+        <code>@property(nonatomic, readonly, nullable) NSSet &lt;UITouch *&gt; *allTouches;<br/>
+        </code>记录一个事件中的所有手势动作的属性</p>
+
+    <h3 id="toc_3">触摸屏幕的过程</h3>
+
+    <p>主线程的runloop接收到UIEvent，然后经由分发器，首先分发到window上，然后传递给UIView，然后正式遍历这个UIView的所有子视图的过程。在遍历过程中，如果子视图的任何一个view在执行hittest时返回了self（当前子view），就表示找到了响应的视图，这时父类也会通过返回值将这个子view向上返回，一直返回到window，返回到application，也就让系统知道了应该让谁来处理这个触摸。</p>
+
+    <p>注意：以下三种情况下，view将不会执行hittest：<br/>
+        1. hidden=YES<br/>
+        2. userInteractionEnabled=NO<br/>
+        3. alpha&lt;0.01</p>
+
+    <p><strong>PS:</strong>1. 即使某个view不会作为响应者，并且也不在点击范围内，只要它是当前显示的vc或者view的子视图，就会被httest遍历到，从而获取到是否可以作为响应者的信息。</p>
+
+    <h3 id="toc_4">根据nextResponder可找出当前点击的控制器</h3>
+
+    <p>view的nextResponder可能是view，如果是view就继续找nextResponder，直到是vc了，就是它所属的vc。</p>
+
+    <p>vc上面还有childVC，这时childVC的nextResponder不是UIWindow，而是其父类vc，一直到vc已经是UIWindow的rootVC，其nextResponder才是UIWindow。</p>
+
+    <h2 id="toc_5">如果要处理某个view的点击事件，重写该方法</h2>
+
+<pre><code>
+    -(UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event{
+        NSLog(@&quot;C view&quot;);
+
+        UIView *hitTestView = [super hitTest:point withEvent:event];
+        if (hitTestView == self) {
+            NSLog(@&quot;LMViewC-&gt;%@&quot;,hitTestView);
+
+            return hitTestView;
+        }
+        return nil;
+
+    }
+
+</code></pre>
+
+    <p>如果<code>hitTest:withEvent:</code>方法中返回nil，那么调用该方法的控件本身和其子控件都不是最合适的view，也就是在自己身上没有找到更合适的view。那么最合适的view就是该控件的父控件。</p>
+
+    <p><code>pointInside:withEvent:</code>方法判断点在不在当前view上（方法调用者的坐标系上）如果返回YES，代表点在方法调用者的坐标系上;返回NO代表点不在方法调用者的坐标系上，那么方法调用者也就不能处理事件。</p>
+
+    <p><code>hitTest:withEvent:</code>是传递事件,父控件到子控件。</p>
+
+<pre><code>
+    -(void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event{
+
+        NSLog(@&quot;%s&quot;,__func__);
+
+        NSLog(@&quot;------------------&quot;);
+        NSLog(@&quot;      v &quot;);
+        NSLog(@&quot;    %@&quot;,  [self class]);
+
+        UIResponder * next = [self nextResponder];
+
+        while (next != nil)
+        {
+            NSLog(@&quot;      v &quot;);
+            NSLog(@&quot;    %@&quot;,  [next class]);
+            next = [next nextResponder];
+        }
+        NSLog(@&quot;------------------&quot;);
+
+        [super touchesBegan:touches withEvent:event];
+
+    }
+</code></pre>
+
+    <p><code>touchesBegan:</code>是响应事件,是从子控件到父控件。</p>
+
+    <h3 id="toc_6">先传递后响应！</h3>
+
+    <hr/>
+
+    <p><strong>事件传递过程</strong></p>
+
+    <p><img src="../../../Images/事件传递过程.png" alt="事件传递过程"/>￼</p>
+
+    <hr/>
+
+    <p><strong>事件响应过程</strong><br/>
+        <img src="../../../Images/响应方向.png" alt="响应方向"/>￼</p>
+
+    <p>如果当前 view 是控制器的 view，那么控制器就是上一个响应者，事件就传递给控制器；如果当前 view 不是控制器的 view，那么父视图就是当前 view 的上一个响应者，事件就传递给它的父视图。</p>
+
+    <hr/>
+
+    <p><strong>注意：</strong>自己的<code>hitTest:withEvent:</code>方法中返回自己有时候会出现问题，因为会存在这么一种情况，当遍历子控件时，如果触摸点不在子控件A自己身上而是在子控件B身上，还要要求返回子控件A作为最合适的view，采用返回自己的方法可能会导致还没有来得及遍历A自己，就有可能已经遍历了点真正所在的view，也就是B。这就导致了返回的不是自己而是点真正所在的view。所以还是建议在父控件的hitTest:withEvent:中返回子控件作为最合适的view！</p>
+
+</div>
+
+<!--页脚-->
+<footer>
+    <ul class="share-group">
+        <li><a href="https://github.com/lemon365189523" target="_blank"><img src="../../../Images/github.png" ></a></li>
+        <li><a href="http://weibo.com/u/1936474822?is_all=1" target="_blank"><img src="../../../Images/sina.png" ></a></li>
+        <li><a href="javascript:void(0);"  id="share_qq"><img src="../../../Images/QQ.png" ></a></li>
+    </ul>
+    <div class="copy">
+        &copy 2017 Lemon
+    </div>
+</footer>
+<!--遮盖-->
+<div class="mask"></div>
+<!--侧边栏-->
+<div id="sidebar">
+    <ul>
+        <li><a href="../../../special/special_OC.html">Objective-C</a></li>
+        <li><a href="../../../special/special_swift.html">Swift</a></li>
+        <li><a href="../../../special/special_HTML5.html">HTML5</a></li>
+        <li><a href="../../../special/special_css.html">CSS</a></li>
+        <li><a href="../../../special/special_js.html">JavaScript</a></li>
+    </ul>
+</div>
+
+<button id="back-to-top">返回顶部</button>
+
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>iOS的关于堆区和栈区</title>
+    <meta charset="utf-8">
+    <script src="../../../JS/jQuery.js" type="text/javascript"></script>
+    <script src="../../../JS/main.js"></script>
+    <!--常规化重置CSS 保留部分原有的样式-->
+    <link rel="stylesheet" href="../../../CSS/CSSReset.css">
+    <link rel="stylesheet" href="../../../CSS/main.css">
+    <!--markdown生成的代码-->
+    <link rel="stylesheet" href="../../../CSS/markDown.css">
+
+    <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
+    <script src="../../../JS/article.js"></script>
+    <link rel="stylesheet" href="../../../CSS/article.css">
+    <link rel="stylesheet" href="../../../styles/default.css">
+    <script src="../../../JS/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="shortcut icon" href="../../../Images/bitbug_favicon.ico" />
+</head>
+<body>
+<div>
+    <nav id="nav">
+        <div class="logo"><a href=""></a></div>
+        <ul>
+            <li><a href="../../../index.html" >首页</a></li>
+            <li><a href="../../../about_me.html" >About</a></li>
+            <li id="sidebar_trigger"><a href="javascript:void(0);" >专题菜单</a></li>
+        </ul>
+    </nav>
+</div>	
+<!-- 内容  -->
+<div class="markdown-body">
+    <h1 id="toc_0">iOS的关于堆区和栈区</h1>
+
+    <blockquote>
+        <p>堆和栈的概念区别</p>
+    </blockquote>
+
+    <p>堆： 是大家共有的空间，分全局堆和局部堆。全局堆就是所有没有分配的空间，局部堆就是用户分配的空间。堆在操作系统对进程 初始化的时候分配，运行过程中也可以向系统要额外的堆，但是记得用完了要还给操作系统，要不然就是内存泄漏。堆里面一般 放的是静态数据，比如static的数据和字符串常量等，资源加载后一般也放在堆里面。一个进程的所有线程共有这些堆 ，所以对堆的操作要考虑同步和互斥的问题。程序里面编译后的数据段都是堆的一部分。</p>
+
+    <p>栈： 是个线程独有的，保存其运行状态和局部自动变量的。栈在线程开始的时候初始化，每个线程的栈互相独立，因此 ，栈是　thread safe的。每个c++对象的数据成员也存在在栈中，每个函数都有自己的栈，栈被用来在函数之间传递参数。操作系统在切换线程的时候会自动的切换栈，就是 切换ss/esp寄存器。栈空间不需要在高级语言里面显式的分配 和释放。支持的数据有限，一般是整数，指针，浮点数等系统直接支持的数据类型， 并不直接支持其他的数据结构。</p>
+
+    <blockquote>
+        <p>预备知识—程序的内存分配</p>
+    </blockquote>
+
+    <p>1、栈区（stack）— 由编译器自动分配释放，存放函数的参数值，局部变量的值等。其操作方式类似于数据结构中的栈。</p>
+
+    <p>2、堆区（heap） — 一般由程序员分配释放， 若程序员不释放，程序结束时可能由OS回收。注意它与数据结构中的堆是两回事，分配方式倒是类似于链表。</p>
+
+    <p>3、全局（静态）区包含下面两个分区：</p>
+
+    <ul>
+        <li>数据区：数据段用来存放可执行文件中已初始化全局变量，换句话说就是存放程序静态分配的变量和全局变量。</li>
+        <li>BSS区：BSS段包含了程序中未初始化全局变量。</li>
+    </ul>
+
+    <p>4、文字常量区 —常量字符串就是放在这里的。程序结束后由系统释放。</p>
+
+    <p>5、程序代码区—存放函数体的二进制代码。<br/>
+        <img src="../../../Images/内存图.png" alt="970779-efa594531d450226"/>￼</p>
+
+    <hr/>
+
+    <h3 id="toc_1">关于字符串</h3>
+
+<pre><code>
+    
+    /*
+    static与const组合：在每个文件都需要定义一份静态全局变量。
+    extern与const组合:只需要定义一份全局变量，多个文件共享。
+    static和extern定义的变量都在全局（静态）区
+    */
+    //静态变量
+    static  LMClass *obj4 ;
+    //全局静态变量
+    //extern作用:只是用来获取全局变量(包括全局静态变量)的值，不能用于定义变量
+    extern NSString *externString = @&quot;dddd&quot;;
+
+    int myInt = 20;//全局初始化区（数据区）
+    NSString *str;//全局未初始化区（BSS区）
+
+    -(void) testString{
+        NSString *string = @&quot;dddd&quot;;
+        NSLog(@&quot;dddd -&gt; %p&quot;,@&quot;dddd&quot;); //dddd是常量字符串，存在常量区
+        NSLog(@&quot;string-&gt;%p&quot;,string); //string指针存在栈区， 指针指向常量区
+        NSLog(@&quot;Int -&gt; %u&quot;,0xa5a5a5a5);
+        //string2在栈中，指向堆区的地址
+        NSString *string2 = [[NSString alloc] initWithFormat:@&quot;dddd&quot;];
+        NSLog(@&quot;string2-&gt; %p&quot;,string2);
+
+        NSString *string3 = [NSString stringWithFormat:@&quot;dddd&quot;];
+        NSLog(@&quot;string3 -&gt; %p&quot;, string3);
+        //    string3 = nil;
+        NSLog(@&quot;string3 -&gt; %p&quot;, string3);
+        //string2 和 string3 都是指向同一地址
+        //    string2 = nil;
+        NSString *string4 = [string3 copy];
+        //string4 也和 string2,3地址一样
+        NSLog(@&quot;string4 -&gt; %p&quot;, string4);
+
+        //externString是指向常量区
+        NSLog(@&quot;externString -&gt;%p&quot;, externString);
+    }
+</code></pre>
+
+    <p><code><br/>
+        dddd -&gt; 0x104420b70<br/>
+        string-&gt;0x104420b70<br/>
+        Int -&gt; 2779096485<br/>
+        string2-&gt; 0xa000000646464644<br/>
+        string3 -&gt; 0xa000000646464644<br/>
+        string3 -&gt; 0xa000000646464644<br/>
+        string4 -&gt; 0xa000000646464644<br/>
+        externString -&gt;0x10ecfab70<br/>
+    </code><br/><br/>
+        这图片是在当前控制器po的<br/>
+        <img src="../../../Images/在字符串的控制器.png" alt="在字符串的控制器"/>￼</p>
+
+    <p>这个我在没有创建上面的控制器时po的。<br/>
+        <img src="../../../Images/heapandstack.png" alt="屏幕快照 2017-04-08 下午8.07.53"/>￼</p>
+
+    <p><code>0xa000000646464644</code>po出也是dddd。<br/>
+        所以我的理解是string2,3,4的指向堆区，因为字符串存在常量区，所以它们都是指向常量区的字符串。</p>
+
+    <p>打印的常量<code>dddd -&gt; 0x104420b70</code>，string2，3，4的<code>0xa000000646464644</code>是新建对象，对象指针指向栈区。</p>
+
+    <h3 id="toc_2">关于对象</h3>
+
+<pre><code>
+    -(void) testObject{
+        //对象的创建都是存放在堆区中，如果是局部变量，因为ARC的存在，所以不用程序员再手动释放，过了作用域obj1，2，3指向的内存都会被释放。
+        LMClass *obj1 = [[LMClass alloc] init];
+        NSLog(@&quot;obj1-&gt;%p-----obj1指针%p&quot;,obj1, &amp;obj1);
+
+        LMClass *obj2 = [[LMClass alloc] init];
+        NSLog(@&quot;obj2-&gt;%p-----obj2指针%p&quot;,obj2, &amp;obj2);
+
+        LMClass *obj3 = [obj2 copy];
+        NSLog(@&quot;obj3-&gt;%p-----obj3指针%p&quot;,obj3, &amp;obj3);
+
+        //obj2释放了，原来obj2指向的内存成为空闲内存
+        obj2 = nil;
+
+    }
+
+</code></pre>
+
+    <p><code><br/>
+        obj1-&gt;0x6100000148b0-----obj1指针0x7fff57aecc18<br/>
+        obj2-&gt;0x618000014b30-----obj2指针0x7fff57aecc10<br/>
+        obj3-&gt;0x600000014b80-----obj3指针0x7fff57aecc08<br/>
+        (lldb) po obj2<br/>
+        nil<br/>
+        (lldb) po 0x618000014b30<br/>
+        107202383792720 //对象原来的地址释放掉<br/>
+        (lldb) po &amp;obj2<br/>
+        0x00007fff57aecc10<br/>
+    </code></p>
+
+</div>
+<!--页脚-->
+<footer>
+    <ul class="share-group">
+        <li><a href="https://github.com/lemon365189523" target="_blank"><img src="../../../Images/github.png" ></a></li>
+        <li><a href="http://weibo.com/u/1936474822?is_all=1" target="_blank"><img src="../../../Images/sina.png" ></a></li>
+        <li><a href="javascript:void(0);"  id="share_qq"><img src="../../../Images/QQ.png" ></a></li>
+    </ul>
+    <div class="copy">
+        &copy 2017 Lemon
+    </div>
+</footer>
+<!--遮盖-->
+<div class="mask"></div>
+<!--侧边栏-->
+<div id="sidebar">
+    <ul>
+        <li><a href="../../../special/special_OC.html">Objective-C</a></li>
+        <li><a href="../../../special/special_swift.html">Swift</a></li>
+        <li><a href="../../../special/special_HTML5.html">HTML5</a></li>
+        <li><a href="../../../special/special_css.html">CSS</a></li>
+        <li><a href="../../../special/special_js.html">JavaScript</a></li>
+    </ul>
+</div>
+
+<button id="back-to-top">返回顶部</button>
+
+</body>
+</html>

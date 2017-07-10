@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>块的理解和使用</title>
+    <meta charset="utf-8">
+    <script src="../../../JS/jQuery.js" type="text/javascript"></script>
+    <script src="../../../JS/main.js"></script>
+    <!--常规化重置CSS 保留部分原有的样式-->
+    <link rel="stylesheet" href="../../../CSS/CSSReset.css">
+    <link rel="stylesheet" href="../../../CSS/main.css">
+    <!--markdown生成的代码-->
+    <link rel="stylesheet" href="../../../CSS/markDown.css">
+
+    <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
+    <script src="../../../JS/article.js"></script>
+    <link rel="stylesheet" href="../../../CSS/article.css">
+    <link rel="stylesheet" href="../../../styles/default.css">
+    <script src="../../../JS/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="shortcut icon" href="../../../Images/bitbug_favicon.ico" />
+</head>
+<body>
+<div>
+    <nav id="nav">
+        <div class="logo"><a href=""></a></div>
+        <ul>
+            <li><a href="../../../index.html" >首页</a></li>
+            <li><a href="../../../about_me.html" >About</a></li>
+            <li id="sidebar_trigger"><a href="javascript:void(0);" >专题菜单</a></li>
+        </ul>
+    </nav>
+</div>
+<!-- 内容  -->
+<div class="markdown-body">
+    <h1 id="toc_0">块的理解和使用</h1>
+
+    <h2 id="toc_1">1.块的语法</h2>
+
+    <p>通过支持块的语法功能可以声明块类型的变量和常量。<br/>
+        声明块类型的语法<br/>
+        <img src="../../../Images/block语法.png" alt="block语法"/>￼</p>
+
+<pre><code>
+    //声明一个有返回值为int 有一个参的block
+    int (^oneParamBlock)(int );
+    //声明一个没有返回值为int 有两个参的block
+    void (^twoParamBlock)(int , int);
+    //声明一个有返回值为int 没有参的block
+    int (^noParamBlocl)();
+
+</code></pre>
+
+    <p>因为可将变量设置为类型，所以快变量也可以被用作函数的方法的参数。通常可以通过创建类型定义为块类型提供别名。（typedef）</p>
+
+    <h2 id="toc_2">2.块常量的使用</h2>
+
+<pre><code>
+    //声明一个block
+    typedef int (^AdderBlock)(int);
+    //创建一个参数为block的方法
+    -(int)block:(AdderBlock) block{
+        int a = 0;
+        if (block) {
+            a = block(4);
+        }
+        return a;
+    }
+</code></pre>
+
+<pre><code>
+    //方法调用
+    int value = [self block:^int(int a) {
+        int b = a + 4;
+        return b;
+    }];
+
+    NSLog(@&quot;%d&quot;,value);//value = 8
+</code></pre>
+
+    <p>可以使用一条语句定义并调用块表达式。注意，块表达式是匿名的，因此调用操作符会接受带有符合块表达式的参数列表的匿名函数</p>
+
+<pre><code>//没有返回值 匿名block
+    ^(NSString *user){
+    NSLog(@&quot;%@&quot;,user);
+    }(@&quot;Lemon&quot;);
+
+</code></pre>
+
+    <h2 id="toc_3">3.可修改的__block变量</h2>
+
+    <p>默认情况下，在块常量表达式中通过词汇范围访问的块局部变量不能修改。使用存储类型修改符<code>__block</code>可以将这些变量切换为读写模式。</p>
+
+<pre><code>
+    __block int myValue = 10;
+    void(^intBlock)(int) = ^(int amout){
+        myValue += amout;
+        NSLog(@&quot;新值：%d&quot;,myValue);
+    };
+    intBlock(5);
+</code></pre>
+
+    <p>当引用变量的块被复制到堆存储区域时，使用__block修改符的变量也会被复制到堆存储区域。</p>
+
+    <h2 id="toc_4">4.块的内存管理</h2>
+
+    <p>在运行程序时，块常量表达式会或的栈内存，因而会拥有与局部变量相同的生命周期。因此，它们必须被复制到永久存储区域（即堆）中，才能在定义它们的范围之外使用。</p>
+
+<pre><code>
+    void (^greetingBlock)(void);
+    {//范围的起点，将局部变量压入栈中
+        greetingBlock = ^{
+            NSLog(@&quot;Hello World!&quot;);
+        }
+    }//范围的终点，从栈中弹出变量（即块常量）
+    greetingBlock();//调用这个块可能会使程序崩溃！
+</code></pre>
+
+    <p>Objective-C为块常量的内存管理提供了复制（Block_copy()）和释放（Block_release()）命令。</p>
+
+    <h2 id="toc_5">5.循环引用</h2>
+
+    <p>block在iOS开发中被视作是对象，因此其生命周期会一直等到持有者的生命周期结束了才会结束。另一方面，由于block捕获变量的机制，使得持有block的对象也可能被block持有，从而形成循环引用，导致两者都不能被释放。</p>
+
+    <p><strong>举个栗子</strong></p>
+
+<pre><code>
+    - (void)viewDidLoad {
+        [super viewDidLoad];
+        self.blockClass = [[LMBlockClass alloc] init];
+
+
+        [self setblock:^{
+            self.string = @&quot;dddd&quot;;
+        }];
+    }
+
+    -(void) setblock:(void(^)())block{
+        if (block) {
+            block();
+        }
+    }
+
+    -(void)dealloc{
+        NSLog(@&quot;LMAboutBlockVC销毁&quot;);
+    }
+</code></pre>
+
+    <p>这种情况VC能够正常释放，因为该对象并没有持有block，没有构成引用循环。</p>
+
+    <p><strong>栗子2</strong></p>
+
+<pre><code>
+    - (void)viewDidLoad {
+        [super viewDidLoad];
+        self.blockClass = [[LMBlockClass alloc] init];
+
+        [self.blockClass testBlock1:^{
+            self.string = @&quot;ssss&quot;;
+        }];
+
+    }
+    -(void)dealloc{
+        NSLog(@&quot;LMAboutBlockVC销毁&quot;);
+    }
+    /---------我是一条华丽的分割线-------------/
+
+    @interface LMBlockClass ()
+
+    @property (nonatomic,copy) LMBlock block;
+
+    @end
+
+    @implementation LMBlockClass
+
+    -(void)testBlock1:(LMBlock)block{
+        self.block = block;
+        if (self.block) {
+            self.block();
+        }
+    }
+
+    @end
+</code></pre>
+
+    <p>这种情况就会导致引用循环。因为self强引用了blockClass，而blockClass也引用了block，在block中调self导致了循环引用。<br/>
+        <img src="../../../Images/block的引用循环.png" alt="block的引用循环"/>￼</p>
+
+    <h2 id="toc_6">6.Block底层原理</h2>
+
+    <p>先新建一个block.m文件<br/>
+        然后在.m文件写上block</p>
+
+<pre><code>
+    int main(int argc, const char * argv[]) {
+        @autoreleasepool {
+
+            int a = 10;
+
+            void (^block)() = ^{
+                printf(&quot;%d\n&quot;, a);
+            };
+
+            //再次给a 赋值
+
+            a = 20;
+
+            block();
+        }
+        return 0;
+    }
+</code></pre>
+
+    <p>用终端cd该文件所在的文件夹下，输入命令<code>clang -rewrite-objc block.m</code>。会生成一个<code>block.cpp</code>文件。目的是为了将OC转为C++。</p>
+
+    <p><strong>block.cpp对应的block</strong></p>
+
+<pre><code>
+    //block是一个结构体
+    struct __main_block_impl_0 {
+        struct __block_impl impl;
+        struct __main_block_desc_0* Desc;
+        int a;
+        //Block结构体的初始化方法
+        __main_block_impl_0(void *fp, struct __main_block_desc_0 *desc, int _a, int flags=0) : a(_a) {
+            /*
+            block也是OC的对象
+            _NSConcreteStackBlock 保存在栈中的block，出栈时会被销毁
+            _NSConcreteGlobalBlock 全局的静态block，不会访问任何外部变量
+            _NSConcreteMallocBlock 保存在堆中的block，当引用计数为0时会被销毁
+            */
+
+            impl.isa = &amp;_NSConcreteStackBlock;
+            impl.Flags = flags;
+            impl.FuncPtr = fp;//函数指针，也就是block所需要执行的代码段，真正存的地址
+        Desc = desc;
+        }
+    };
+    //block会持有block里的对象或数据
+    static void __main_block_func_0(struct __main_block_impl_0 *__cself) {
+        int a = __cself-&gt;a; // bound by copy
+
+        printf(&quot;%d\n&quot;, a);
+    }
+    //block创建空间方法
+    static struct __main_block_desc_0 {
+        size_t reserved;
+        size_t Block_size;
+    } __main_block_desc_0_DATA = { 0, sizeof(struct __main_block_impl_0)};
+    int main(int argc, const char * argv[]) {
+    /* @autoreleasepool */ { __AtAutoreleasePool __autoreleasepool;
+
+            int a = 10;
+            //初始化block
+            void (*block)() = ((void (*)())&amp;__main_block_impl_0((void *)__main_block_func_0, &amp;__main_block_desc_0_DATA, a));
+
+
+
+            a = 20;
+
+            ((void (*)(__block_impl *))((__block_impl *)block)-&gt;FuncPtr)((__block_impl *)block);
+        }
+        return 0;
+    }
+</code></pre>
+
+    <blockquote>
+        <p>配置在全局的GlobalBlock可以出了作用域还是能继续访问，但是在栈上的StackBlock就废弃了，因此为了出了作用域能继续使用，OC提供了把Block和__block这两个东西从栈上复制到堆上的方法来解决这个问题。而_forwarding其实既可以指向自己，也可以指向复制后的自己，也就是说有了这个指针的存在，无论__block变量配置在堆上还是栈上都能够正确的访问__block变量。</p>
+    </blockquote>
+
+    <p>PS:_forwarding是__block结构体中的指针</p>
+
+    <p>在ARC下,以下几种情况, Block会自动被从栈复制到堆:</p>
+
+    <ol>
+        <li> 被执行copy方法</li>
+        <li> 作为方法返回值</li>
+        <li> 将Block赋值给附有__strong修饰符的id类型的类或者Blcok类型成员变量时</li>
+    </ol>
+
+<pre><code>
+    - (void)viewDidLoad {
+        [super viewDidLoad];
+        void(^testBlock)();
+
+        void(^testBlock1)();
+
+        int a = 100;
+        testBlock1 = ^{
+        NSLog(@&quot;%d&quot;,a);
+        };
+        /*  testBlock1  */
+        /* 该block拦截了a变量且生成testBlock1变量,block在堆区 */
+        NSLog(@&quot;testBlock1-&gt;%@&quot;,testBlock1);
+        //testBlock1-&gt;&lt;__NSMallocBlock__: 0x61000005c560&gt;
+
+        /*  testBlock2  */
+        /* 该block没有拦截变量，block存在全局区 */
+        NSLog(@&quot;testBlock2-&gt;%@&quot;,^{NSLog(@&quot;mmmmmm&quot;);});
+        //testBlock2-&gt;&lt;__NSGlobalBlock__: 0x109f2e290&gt;
+
+        /*  testBlock3  */
+        //拦截变量a，但没有生成block变量，存在栈区
+        NSLog(@&quot;testBlock3-&gt;%@&quot;,^{NSLog(@&quot;%d&quot;,a);});
+        //testBlock3-&gt;&lt;__NSStackBlock__: 0x7fff5eef1b80&gt;
+
+        /* test strongBlock  */
+        //strongBlock
+        __block int val = 10;
+        __strong LMBlock strongPointerBlock = ^{NSLog(@&quot;val1 = %d&quot;, ++val);};
+        NSLog(@&quot;strongPointerBlock-&gt;%@&quot;,strongPointerBlock);
+        //strongPointerBlock-&gt;&lt;__NSMallocBlock__: 0x600000240f90&gt;
+
+        /* test weakBlock  */
+        __weak LMBlock weakPointerBlock = ^{NSLog(@&quot;val2 = %d&quot;, ++val);};
+        NSLog(@&quot;weakPointerBlock-&gt;%@&quot;, weakPointerBlock);
+        //weakPointerBlock-&gt;&lt;__NSStackBlock__: 0x7fff5889bb00&gt;
+
+        /* test copyWeakBlock */
+        NSLog(@&quot;mallocBlock3: %@&quot;, [weakPointerBlock copy]);
+        //mallocBlock3: &lt;__NSMallocBlock__: 0x618000058a80&gt;
+
+        /* 拦截__block变量的block  */
+        NSLog(@&quot;test4 %@&quot;, ^{NSLog(@&quot;val4 = %d&quot;, ++val);});
+        //test4 &lt;__NSStackBlock__: 0x7fff5b072ad8&gt;
+
+        /* copy stackBlock */
+        NSLog(@&quot;test5 %@&quot;, [^{NSLog(@&quot;val4 = %d&quot;, ++val);} copy]);
+        //test5 &lt;__NSMallocBlock__: 0x608000058ae0&gt;
+
+        /* Block作为传参  */
+        // stackBlock经过传参 打印
+        NSLog(@&quot;传参后 %@&quot;,[self getBlock]);
+        //传参后 &lt;__NSMallocBlock__: 0x60800005c170&gt;
+    }
+
+
+    - (LMBlock)getBlock
+    {
+        int val = 11;
+        NSLog(@&quot;传参前：%@&quot;,^{NSLog(@&quot;%d&quot;,val);});
+        //传参前：&lt;__NSStackBlock__: 0x7fff55bd79b8&gt;
+
+        return ^{NSLog(@&quot;%d&quot;,val);};
+    }
+</code></pre>
+
+    <p>用strong修饰符和weak修饰符分别打印的是malloc的和stack的，但是无论哪种，只要copy就是变成malloc类型了</p>
+
+</div>
+<!--页脚-->
+<footer>
+    <ul class="share-group">
+        <li><a href="https://github.com/lemon365189523" target="_blank"><img src="../../../Images/github.png" ></a></li>
+        <li><a href="http://weibo.com/u/1936474822?is_all=1" target="_blank"><img src="../../../Images/sina.png" ></a></li>
+        <li><a href="javascript:void(0);"  id="share_qq"><img src="../../../Images/QQ.png" ></a></li>
+    </ul>
+    <div class="copy">
+        &copy 2017 Lemon
+    </div>
+</footer>
+<!--遮盖-->
+<div class="mask"></div>
+<!--侧边栏-->
+<div id="sidebar">
+    <ul>
+        <li><a href="../../../special/special_OC.html">Objective-C</a></li>
+        <li><a href="../../../special/special_swift.html">Swift</a></li>
+        <li><a href="../../../special/special_HTML5.html">HTML5</a></li>
+        <li><a href="../../../special/special_css.html">CSS</a></li>
+        <li><a href="../../../special/special_js.html">JavaScript</a></li>
+    </ul>
+</div>
+
+<button id="back-to-top">返回顶部</button>
+
+</body>
+</html>

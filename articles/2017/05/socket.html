@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>关于使用GCDAsyncSocket</title>
+    <meta charset="utf-8">
+    <script src="../../../JS/jQuery.js" type="text/javascript"></script>
+    <script src="../../../JS/main.js"></script>
+    <!--常规化重置CSS 保留部分原有的样式-->
+    <link rel="stylesheet" href="../../../CSS/CSSReset.css">
+    <link rel="stylesheet" href="../../../CSS/main.css">
+    <!--markdown生成的代码-->
+    <link rel="stylesheet" href="../../../CSS/markDown.css">
+
+    <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
+    <script src="../../../JS/article.js"></script>
+    <link rel="stylesheet" href="../../../CSS/article.css">
+    <link rel="stylesheet" href="../../../styles/default.css">
+    <script src="../../../JS/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="shortcut icon" href="../../../Images/bitbug_favicon.ico" />
+</head>
+<body>
+<div>
+    <nav id="nav">
+        <div class="logo"><a href=""></a></div>
+        <ul>
+            <li><a href="../../../index.html" >首页</a></li>
+            <li><a href="../../../about_me.html" >About</a></li>
+            <li id="sidebar_trigger"><a href="javascript:void(0);" >专题菜单</a></li>
+        </ul>
+    </nav>
+</div>	
+<!-- 内容  -->
+<div class="markdown-body">
+    <h1 id="toc_0">关于使用GCDAsyncSocket</h1>
+
+    <h2 id="toc_1">GCDAsyncSocket是什么？</h2>
+
+    <p>GCDAsyncSocket是一个封装了<code>&lt;sys/socket.h&gt;</code>的第三方库。<br/>
+        而我们平时说的最多的socket是什么呢，实际上socket是对TCP/IP协议的封装，Socket本身并不是协议，而是一个调用接口（API），通过Socket，我们能使用TCP/IP协议。实际上，Socket跟TCP/IP协议没有必然的联系。Socket编程接口在设计的时候，就希望也能适应其他的网络协议。所以说，Socket的出现只是使得程序员更方便地使用TCP/IP协议栈而已，是对TCP/IP协议的抽象，从而形成了我们知道的一些最基本的函数接口，比如create、listen、connect、accept、send、read和write等等。</p>
+
+    <h2 id="toc_2">GCDAsyncSocket的作用？</h2>
+
+    <p>建立Socket连接至少需要一对套接字，其中一个运行于客户端，称为ClientSocket ，另一个运行于服务器端，称为ServerSocket 。</p>
+
+    <p>套接字之间的连接过程分为三个步骤：服务器监听，客户端请求，连接确认。</p>
+
+    <p>1。服务器监听：服务器端套接字并不定位具体的客户端套接字，而是处于等待连接的状态，实时监控网络状态，等待客户端的连接请求。</p>
+
+    <p>2。客户端请求：指客户端的套接字提出连接请求，要连接的目标是服务器端的套接字。为此，客户端的套接字必须首先描述它要连接的服务器的套接字，指出服务器端套接字的地址和端口号，然后就向服务器端套接字提出连接请求。</p>
+
+    <p>3。连接确认：当服务器端套接字监听到或者说接收到客户端套接字的连接请求时，就响应客户端套接字的请求，建立一个新的线程，把服务器端套接字的描述发给客户端，一旦客户端确认了此描述，双方就正式建立连接。而服务器端套接字继续处于监听状态，继续接收其他客户端套接字的连接请求。</p>
+
+    <h2 id="toc_3">GCDAsyncSocket的使用？</h2>
+
+    <p><strong>客户端(client)</strong></p>
+
+    <p>连接服务器</p>
+
+    <pre><code>  clientSocket = GCDAsyncSocket()
+  clientSocket.delegate = self
+  clientSocket.delegateQueue = DispatchQueue.global()
+  do {
+      try clientSocket.connect(toHost: inputIPTF.text!, onPort: 8080)
+  } catch {
+      print(&quot;error&quot;)
+  }
+</code></pre>
+
+    <p>连接服务器成功后的回调</p>
+
+    <pre><code>func socket(_ sock: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
+   //链接成功
+   print(&quot;链接成功-&gt;端口:&quot; + host + &quot; port:&quot; + String(port))
+   clientSocket.readData(withTimeout: -1, tag: 0)
+}
+</code></pre>
+
+    <p>服务端发来信息时触发回调</p>
+
+    <pre><code>func socket(_ sock: GCDAsyncSocket, didRead data: Data, withTag tag: Int) {
+   //获取客户端发来的数据
+   let readClientDataString: NSString? = NSString.init(data: data, encoding: String.Encoding.utf8.rawValue)
+   print(readClientDataString ?? &quot;nil&quot;)
+
+   DispatchQueue.main.async {
+
+       guard  let str = readClientDataString else{
+           self.msgLB.text = &quot;&quot;
+           return
+       }
+       self.msgLB.text = String(str)
+   }
+
+   self.sendMsgWithString(msg: &quot;OK&quot;)
+
+}
+
+</code></pre>
+
+    <p><strong>服务端(server)</strong></p>
+
+    <p>链接服务端</p>
+
+    <pre><code>@IBAction func connetnServer(_ sender: UIButton) {
+   if (inputPortTF.text?.isEmpty)! == false &amp;&amp; inputIPTF.text?.isEmpty == false{
+
+       clientSocket = GCDAsyncSocket()
+       clientSocket.delegate = self
+       clientSocket.delegateQueue = DispatchQueue.global()
+       do {
+           try clientSocket.connect(toHost: inputIPTF.text!, onPort: 8080)
+       } catch {
+           print(&quot;error&quot;)
+       }
+
+   }else{
+       msgLB.text = &quot;端口或IP不能为空&quot;
+   }
+}
+</code></pre>
+
+    <p>有客户端的socket连接到服务器时的回调，把newSocket保存起来。</p>
+
+    <pre><code>///MARK - Delegate
+/*
+* 有客户端的socket连接到服务器
+*/
+func socket(_ sock: GCDAsyncSocket, didAcceptNewSocket newSocket: GCDAsyncSocket) {
+
+   if clientSockets.contains(newSocket) {
+       print(&quot;已经存在！&quot;)
+       return
+   }else{
+       clientSockets.append(newSocket)
+
+   }
+
+   let serviceStr:NSMutableString = NSMutableString()
+   serviceStr.append(&quot;login successful\n&quot;)
+   newSocket.write(serviceStr.data(using: String.Encoding.utf8.rawValue)!, withTimeout: -1, tag: 0)
+
+   // 3.监听客户端有没有数据上传
+   //timeout -1 代表不超时
+   //tag 标识作用，现在不用，就写0
+   newSocket.readData(withTimeout: -1, tag:2)
+
+}
+</code></pre>
+
+    <p>连接服务器后的回调</p>
+
+    <pre><code>func socket(_ sock: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
+   //链接成功
+   print(&quot;链接成功-&gt;端口:&quot; + host + &quot; port:&quot; + String(port))
+   clientSocket.readData(withTimeout: -1, tag: 0)
+}
+
+func socketDidDisconnect(_ sock: GCDAsyncSocket, withError err: Error?) {
+   //与服务器断开
+   print(&quot;断开服务器&quot;)
+}
+
+func socket(_ sock: GCDAsyncSocket, didRead data: Data, withTag tag: Int) {
+   //获取客户端发来的数据
+   let readClientDataString: NSString? = NSString.init(data: data, encoding: String.Encoding.utf8.rawValue)
+   print(readClientDataString ?? &quot;nil&quot;)
+
+   DispatchQueue.main.async {
+
+       guard  let str = readClientDataString else{
+           self.msgLB.text = &quot;&quot;
+           return
+       }
+       self.msgLB.text = String(str)
+   }
+
+   self.sendMsgWithString(msg: &quot;OK&quot;)
+
+}
+</code></pre>
+
+    <p><img src="../../../Images/socket.png" alt="socket"/>￼<br/>
+        可以下载一个叫网络助手的app来测试socket。</p>
+
+    <p><a href="https://github.com/Lemon365189523/SocketDemo.git">demo位置</a></p>
+
+</div>
+
+<!--页脚-->
+<footer>
+    <ul class="share-group">
+        <li><a href="https://github.com/lemon365189523" target="_blank"><img src="../../../Images/github.png" ></a></li>
+        <li><a href="http://weibo.com/u/1936474822?is_all=1" target="_blank"><img src="../../../Images/sina.png" ></a></li>
+        <li><a href="javascript:void(0);"  id="share_qq"><img src="../../../Images/QQ.png" ></a></li>
+    </ul>
+    <div class="copy">
+        &copy 2017 Lemon
+    </div>
+</footer>
+<!--遮盖-->
+<div class="mask"></div>
+<!--侧边栏-->
+<div id="sidebar">
+    <ul>
+        <li><a href="../../../special/special_OC.html">Objective-C</a></li>
+        <li><a href="../../../special/special_swift.html">Swift</a></li>
+        <li><a href="../../../special/special_HTML5.html">HTML5</a></li>
+        <li><a href="../../../special/special_css.html">CSS</a></li>
+        <li><a href="../../../special/special_js.html">JavaScript</a></li>
+    </ul>
+</div>
+
+<button id="back-to-top">返回顶部</button>
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+.about-header
+{
+    overflow: hidden;
+    background-size: cover;
+    background: #444 url(../Images/pic7.jpg) no-repeat  center;
+    background-attachment: fixed;  /*固定*/
+    background-repeat: no-repeat; /*不重复*/
+    background-size: cover;       /*填满*/
+    background-position: center   /*居中*/
+}
+
+.about-banner
+{
+    min-height: 600px;
+    width: 100%;
+
+}
+
+.header-image
+{
+    margin: 0 auto;
+    position: relative;
+    padding-top: 100px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.header-image img
+{
+    width:150px;
+    height: 150px;
+    margin-bottom: 20px;
+    border: 1px solid #FFFFFF;
+    border-radius: 50%;
+}
+
+.self-introduction
+{
+    color: white;
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.self-introduction p
+{
+    padding: 12px;
+}
+
+#start_p
+{
+    border-top: 2px solid #fff;
+}
+
+#end_p
+{
+    border-bottom: 2px solid #ffffff;
+}
+
+
+/*项目介绍*/
+
+.about-project
+{
+    min-height: 300px;
+    margin: 0 auto;
+    width: 80%;
+    /*解决父div没有随子div撑开*/
+    overflow: hidden;
+}
+
+.project-left
+{
+    min-height: 300px;
+    float: left;
+    width: 50%;
+    padding-top: 10px;
+}
+
+.project-right
+{
+    min-height: 300px;
+    float: right;
+    width: 50%;
+    padding-top: 10px;
+}
+
+
+.about-project img
+{
+    height: 120px;
+    width: 120px;
+    margin: 0 auto;
+    display: block;
+}
+
+
+.about-project div h3
+{
+    padding-top: 10px;
+    text-align: center;
+}
+
+.about-project p
+{
+    padding: 20px;
+    line-height: 30px;
+}

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Foundation框架中的系统服务</title>
+    <meta charset="utf-8">
+    <script src="../../../JS/jQuery.js" type="text/javascript"></script>
+    <script src="../../../JS/main.js"></script>
+    <!--常规化重置CSS 保留部分原有的样式-->
+    <link rel="stylesheet" href="../../../CSS/CSSReset.css">
+    <link rel="stylesheet" href="../../../CSS/main.css">
+    <!--markdown生成的代码-->
+    <link rel="stylesheet" href="../../../CSS/markDown.css">
+
+    <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
+    <script src="../../../JS/article.js"></script>
+    <link rel="stylesheet" href="../../../CSS/article.css">
+    <link rel="stylesheet" href="../../../styles/default.css">
+    <script src="../../../JS/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="shortcut icon" href="../../../Images/bitbug_favicon.ico" />
+</head>
+<body>
+<div>
+    <nav id="nav">
+        <div class="logo"><a href=""></a></div>
+        <ul>
+            <li><a href="../../../index.html" >首页</a></li>
+            <li><a href="../../../about_me.html" >About</a></li>
+            <li id="sidebar_trigger"><a href="javascript:void(0);" >专题菜单</a></li>
+        </ul>
+    </nav>
+</div>
+<!-- 内容  -->
+<div class="markdown-body">
+    <h1 id="toc_0">Foundation框架中的系统服务</h1>
+
+    <h2 id="toc_1">1.引用服务</h2>
+
+    <p>NSProcessInfo类用于获取当前程序的消息（如命令行参数，环境变量、主机名和进程名称等）的实例。</p>
+
+    <p>NSUserDefults类提供了管理用户首选项的API，这些信息用于配置应用程序，会永久地存储在本地文件系统中。</p>
+
+<pre><code>
+    [[NSUserDefaults standardUserDefaults] setObject:@(2) forKey:@&quot;number&quot;];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+
+    NSNumber *number = [[NSUserDefaults standardUserDefaults] objectForKey:@&quot;number&quot;];
+</code></pre>
+
+    <h2 id="toc_2">2.正则表达式和文本处理</h2>
+
+    <p>NSRegularExpression类用于在字符串中处理正则表达式。正则表达式是一种设置和识别文本的模式，NSRegularExpression类含有创建和初始化NSRegularExpression对象方法以及执行各种正则表达式操作。<br/>
+        NSTextCheckingResult类用于描述被文本检查操作找到的项目。</p>
+
+<pre><code>
+
+    NSError *error;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@&quot;World&quot; options:NSRegularExpressionCaseInsensitive error:&amp;error];
+
+    NSString *greeting = @&quot;Hello World&quot;;
+
+    NSTextCheckingResult *match = [regex firstMatchInString:greeting options:0 range:NSMakeRange(0, [greeting length])];
+
+    NSRange range = [match range];
+    NSLog(@&quot;range-&gt;%@&quot;,NSStringFromRange(range));
+</code></pre>
+
+    <h2 id="toc_3">3.文件系统使用程序</h2>
+
+    <p><strong>NSBundle</strong><br/>
+        NSBundle类可以容纳程序中使用的代码和资源。使用这些类可以定位程序资源、以动态的方式加载和卸载可执行代码以及协助进行本地化。<br/>
+        <strong>NSFileHandle文件管理</strong><br/>
+        使用该类的方法可以创建和初始化文件句柄、获取文件描述符、使用文件句柄执行文件I/O操作以及关闭文件。</p>
+
+<pre><code>
+
+    NSString *tmpDir = NSTemporaryDirectory();
+    NSString *myFile = [NSString stringWithFormat:@&quot;%@/Example.txt&quot;,tmpDir];
+    NSFileHandle *fileHandle = [NSFileHandle fileHandleForReadingAtPath:myFile];
+    if (fileHandle) {
+    NSData *data = [fileHandle readDataToEndOfFile];
+    NSLog(@&quot;data-&gt;%@&quot;,data);
+    }
+</code></pre>
+
+    <p><strong>NSFileManager</strong><br/>
+        NSFileManager类提供了执行基础文件系统操作的通用方法，这些操作包括创建文件管理器、查找目录、查询目录内容、管理文件和目录项、创建指向文件的软/硬链接、查询文件访问操作、获取/设置文件的系统属性以及管理iCloud存储项。</p>
+
+<pre><code>
+
+    NSFileManager *manager = [NSFileManager defaultManager];
+    NSString *currentPath = [manager currentDirectoryPath];
+    NSArray *contents = [manager contentsOfDirectoryAtPath:currentPath error:nil];
+    NSLog(@&quot;contents-&gt;%@&quot;,contents);
+    if (contents) {
+    NSString *file = [NSString stringWithFormat:@&quot;%@/%@&quot;,currentPath,contents[0]];
+    if ([manager isExecutableFileAtPath:file]) {
+    NSLog(@&quot;%@ is executable file at path&quot;,file);
+    }
+    }
+</code></pre>
+
+    <h2 id="toc_4">4.计算器和运行循环</h2>
+
+    <p>运行循环时一种基于线程的机制，用于调度任务和协调收到输入时间。<br/>
+        NSRunLoop提供了管理运行循环的API。使用这个类提供的方法可以访问运行循环和模式、管理计时器和端口、运行某个循环和管理消息。</p>
+
+    <h2 id="toc_5">5.URL处理</h2>
+
+    <p>URl处理类用于通过标准Internet协议（http、ftp、https和本地文件），与URL进行交互和与数据资源进行通信。<br/>
+        1.URL加载<br/>
+        2.缓存管理<br/>
+        3.身份认证和证书管理<br/>
+        4.Cookie管理<br/>
+        5.协议支持</p>
+
+    <p>NSURLRequest和NSMutableURLRequest类用于代表URL加载请求.</p>
+
+    <p>NSURLResponse和NSHTTPResponse用于代表URL请求返回的回应。NSURLResponse对象可以执行URL请求的同步加载操作（sendSynchronousRequest：）的对象创建，也可以遵守NSURLConnectionDataDelegate协议的对象创建。<br/>
+        NSURLConnection和NSURLDownload用于下载通过URL识别的资源。</p>
+
+    <p>NSURLConnection必须遵守NSURLConnectionDelegate协议。实现协议方法，获取下载信息。(已抛弃)</p>
+
+    <h2 id="toc_6">6.Cookie管理</h2>
+
+    <p>NSHTTPCookie和NSHTTPCookieStorage可以创建和管理HTTPCookie，这类Cookie用于永久存储跨URL请求的数据。</p>
+
+</div>
+<!--页脚-->
+<footer>
+    <ul class="share-group">
+        <li><a href="https://github.com/lemon365189523" target="_blank"><img src="../../../Images/github.png" ></a></li>
+        <li><a href="http://weibo.com/u/1936474822?is_all=1" target="_blank"><img src="../../../Images/sina.png" ></a></li>
+        <li><a href="javascript:void(0);"  id="share_qq"><img src="../../../Images/QQ.png" ></a></li>
+    </ul>
+    <div class="copy">
+        &copy 2017 Lemon
+    </div>
+</footer>
+<!--遮盖-->
+<div class="mask"></div>
+<!--侧边栏-->
+<div id="sidebar">
+    <ul>
+        <li><a href="../../../special/special_OC.html">Objective-C</a></li>
+        <li><a href="../../../special/special_swift.html">Swift</a></li>
+        <li><a href="../../../special/special_HTML5.html">HTML5</a></li>
+        <li><a href="../../../special/special_css.html">CSS</a></li>
+        <li><a href="../../../special/special_js.html">JavaScript</a></li>
+    </ul>
+</div>
+
+<button id="back-to-top">返回顶部</button>
+
+</body>
+</html>

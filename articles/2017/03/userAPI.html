@@ -1,0 +1,309 @@
+<!DOCTYPE html><html>
+
+<head>
+    <meta charset="utf-8">
+    <title>使用运行时系统API</title>
+    <script src="../../../JS/jQuery.js" type="text/javascript"></script>
+    <script src="../../../JS/main.js"></script>
+    <!--常规化重置CSS 保留部分原有的样式-->
+    <link rel="stylesheet" href="../../../CSS/CSSReset.css">
+    <!--markdown生成的代码-->
+    <link rel="stylesheet" href="../../../CSS/markDown.css">
+    <link rel="stylesheet" href="../../../CSS/main.css">
+
+    <style> @media print{ .hljs{overflow: visible; word-wrap: break-word !important;} }</style>
+    <script src="../../../JS/article.js"></script>
+    <link rel="stylesheet" href="../../../CSS/article.css">
+    <link rel="stylesheet" href="../../../styles/default.css">
+    <script src="../../../JS/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <link rel="shortcut icon" href="../../../Images/bitbug_favicon.ico" />
+</head>
+<body>
+<div>
+    <nav id="nav">
+        <div class="logo"><a href=""></a></div>
+        <ul>
+            <li><a href="../../../index.html" >首页</a></li>
+            <li><a href="../../../about_me.html" >About</a></li>
+            <li id="sidebar_trigger"><a href="javascript:void(0);" >专题菜单</a></li>
+        </ul>
+    </nav>
+</div>
+
+<div class="markdown-body">
+    <h1 id="toc_0"> 使用运行时系统API</h1>
+
+    <p><strong>使用运行时系统API</strong></p>
+
+<pre><code>
+    //创建一个类
+    Class widgetClass = objc_allocateClassPair([NSObject class], &quot;Widget&quot;, 0);
+
+    //向这个类添加一个方法
+    const char *type = &quot;v@:&quot;;
+    class_addMethod(widgetClass, @selector(display), (IMP)display, type);
+
+    //向这个类添加一个实例变量
+    const char *height = &quot;height&quot;;
+    class_addIvar(widgetClass, height, sizeof(id), rint(log2(sizeof(id))), @encode(id));
+
+    //注册这个类
+    objc_registerClassPair(widgetClass);
+
+    //创建一个widget变量并设置实例变量的值
+    id widget = [[widgetClass alloc] init];
+    id value = [NSNumber numberWithInt:5];
+    [widget setValue:value forKey:[NSString stringWithUTF8String:height]];
+    NSLog(@&quot;widget instance height = %@&quot;,[widget valueForKey:[NSString stringWithUTF8String:height]]);
+
+    //向widget发送消息
+    objc_msgSend(widget, NSSelectorFromString(@&quot;display&quot;));
+
+    //以动态方式向widget添加一个属性
+    NSNumber *width = [NSNumber numberWithInt:20];
+    objc_setAssociatedObject(widget, @&quot;width&quot;, widget, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+
+    //获取该变量的值并显示他
+    id result = objc_getAssociatedObject(widget, @&quot;width&quot;);
+    NSLog(@&quot;width = %@&quot;,result);
+</code></pre>
+
+    <h2 id="toc_1"></h2>
+
+    <p>定义实现函数：<br/>
+        <code><br/>
+            static void display (id self, SEL _cmd){<br/>
+            NSLog(@&quot;Invoking method with selector %@ on %@ instance&quot;,NSStringFromSelector(_cmd),[self class]);<br/>
+            }<br/>
+        </code><br/>
+        OC方法就是一个至少接收两个参数（self和_cmd）的C语言函数。</p>
+
+    <h2 id="toc_2"></h2>
+
+    <p>创建并注册类</p>
+
+    <p><code><br/>
+        class_addMethod(widgetClass, @selector(display), (IMP)display, type);<br/>
+    </code><br/>
+        参数：1.添加该方法的类 2.设置被添加方法名称的选择器 3.实现该方法的函数 4.类型编码<br/>
+        类型编码：必须以固定顺序排列：第一个编码用于设置返回值，第二个编码用于设置方法的隐式参数self（类型id），第三个编码用于设置方法的隐式参数_cmd(类型SEL),其他编码用于设置方法的显式参数类型。<br/>
+        v代表void类型，@代表SEL类型。</p>
+
+    <h2 id="toc_3"></h2>
+
+    <p>以动态方式向类实例添加变量</p>
+
+<pre><code>objc_setAssociatedObject(widget, @&quot;width&quot;, width, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+</code></pre>
+
+    <p>在创建关联对象时，需要设置需关联的对象、代表关联关系的关键字、关联对象的内存管理策略和它的值</p>
+
+    <hr/>
+
+    <h2 id="toc_4">创建动态代理</h2>
+
+    <p>先要理解NSProxy这个类<br/>
+        NSProxy是一个抽象父类定义一个API的对象充当其他对象或对象的替身。<br/>
+        可以通过继承它，并重写这两个方法以实现消息转发到另一个实例</p>
+
+<pre><code>
+    - (void)forwardInvocation:(NSInvocation *)anInvocation;
+    - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel;
+</code></pre>
+
+    <p>可以实现消息的转发。</p>
+
+    <blockquote>
+        <p>AOP为Aspect Oriented Programming的缩写，意为：面向切面编程，通过预编译方式和运行期动态代理实现程序功能的统一维护的一种技术。<br/>
+            AOP将功能与程序中的其他组成部分分割开。</p>
+    </blockquote>
+
+    <p><strong>利用消息转化和NSProxy类一起使用，可以在OC中获取不错AOP机制</strong><br/>
+        功能实现的过程<br/>
+        <img src="../../../Images/OC实现Aop逻辑图.png" alt="OC实现Aop逻辑图"/>￼</p>
+
+    <p><strong>LMInvoker协议</strong><br/>
+        定义两个协议方法</p>
+
+<pre><code>//必须实现的方法
+    @required
+    //能够在调用对象中的方法前执行对功能的横切
+    -(void) preInvoke:(NSInvocation *)inv withTarget:(id)target;
+
+    @optional
+    //能够在调用对象中的方法后执行对功能的横切
+    -(void) postInvoke:(NSInvocation *)inv withTarget:(id) target;
+</code></pre>
+
+    <p><strong>LMAuditingInvoker</strong><br/>
+        准守LMInvoker协议的类</p>
+
+<pre><code>@implementation LMAuditingInvoker
+    -(void)preInvoke:(NSInvocation *)inv withTarget:(id)target{
+        NSLog(@&quot;执行方法前selector%@, object:%@&quot;,NSStringFromSelector([inv selector]),[target class]);
+    }
+
+    -(void)postInvoke:(NSInvocation *)inv withTarget:(id)target{
+        NSLog(@&quot;执行方法后selector%@, object:%@&quot;,NSStringFromSelector([inv selector]),[target class]);
+    }
+    @end
+</code></pre>
+
+    <p><strong>LMAspcetProxy</strong><br/>
+        获取横切对象和方法</p>
+
+<pre><code>@interface LMAspcetProxy : NSProxy
+
+    @property (nonatomic, strong) id proxyTarget;
+
+    @property (nonatomic, strong) id&lt;LMInvoker&gt; invoker;
+
+    @property (nonatomic, strong, readonly) NSMutableArray *selectors;
+
+    -(id)initWithObject:(id)object andInvoker:(id&lt;LMInvoker&gt;)ivoker;
+
+    /**
+    初始化LMAspcetProxy
+
+    @param object 被切对象
+    @param selectors 被切的对象里需要监听的方法数组
+    @param invoker 准守LMInvoker协议的对象
+    @return LMAspcetProxy对象
+    */
+    -(id)initWithObject:(id)object selectors:(NSArray *) selectors andInvoker:(id&lt;LMInvoker&gt;) invoker;
+
+    //注册方法 把方法添加到切面代理
+    -(void) registerSelector:(SEL) selector;
+    @end
+</code></pre>
+
+    <p>实现文件</p>
+
+<pre><code>@implementation LMAspcetProxy
+
+    -(id)initWithObject:(id)object andInvoker:(id&lt;LMInvoker&gt;)ivoker{
+        return [self initWithObject:object selectors:nil andInvoker:ivoker];
+    }
+
+    -(id)initWithObject:(id)object selectors:(NSArray *)selectors andInvoker:(id&lt;LMInvoker&gt;)invoker{
+        _proxyTarget = object;
+        _invoker = invoker;
+        _selectors = [selectors mutableCopy];
+
+        return self;
+    }
+
+    /**
+    NSProxy方法：为另一个类实现的消息创建一个有效的方法签名
+
+    @param sel 该对象调用的方法
+    @return 有效的方法签名
+    */
+    -(NSMethodSignature *)methodSignatureForSelector:(SEL)sel{
+        return [self.proxyTarget methodSignatureForSelector:sel];
+    }
+
+    /**
+    forwardInvocation:将选择器转发给一个真正实现了该消息的对象。
+
+    @param invocation 获取到该类调用的invocation（里面包含了target selector 和参数）
+    */
+    -(void)forwardInvocation:(NSInvocation *)invocation{
+    //在调用目标方法前执行横切功能
+        if ([self.invoker respondsToSelector:@selector(preInvoke:withTarget:)]) {
+            if (self.selectors != nil) {
+                 SEL methodSel = [invocation selector];
+                 for (NSValue *selValue in self.selectors) {
+                    //判断该方法有没有注册 有的话调用，invoker对象调用协议方法
+                    if (methodSel == [selValue pointerValue]) {
+                        [self.invoker preInvoke:invocation withTarget:self.proxyTarget];
+                        break;
+                    }
+                }
+             }else{
+                [self.invoker preInvoke:invocation withTarget:self.proxyTarget];
+             }
+        }
+
+        //调用目标方法 LMClass对像调用自己的方法
+        [invocation invokeWithTarget:self.proxyTarget];
+
+        //在调用目标方法后执行横切功能
+        if ([self.invoker respondsToSelector:@selector(postInvoke:withTarget:)]) {
+            if (self.selectors != nil) {
+                 SEL methodSel = [invocation selector];
+                for (NSValue *selValue in self.selectors) {
+                    if (methodSel == [selValue pointerValue]) {
+                        [self.invoker postInvoke:invocation withTarget:self.proxyTarget];
+                         break;
+                    }
+                }
+            }else{
+                [self.invoker postInvoke:invocation withTarget:self.proxyTarget];
+            }
+        }
+    }
+
+    -(void)registerSelector:(SEL)selector{
+    NSValue *selValue = [NSValue valueWithPointer:selector];
+    [self.selectors addObject:selValue];
+    }
+
+    @end
+
+</code></pre>
+
+    <p>测试LMAspcetProxy</p>
+
+<pre><code>
+    LMClass *class = [[LMClass alloc] init];
+    NSNumber *addend1 = @(-25); NSNumber *addend2 = @(10); NSNumber *addend3 = @(15);
+
+    //为该对象创建代理
+    NSValue *selValue = [NSValue valueWithPointer:@selector(sumaddend1:addend2:)];
+    NSArray *selValues = @[selValue];
+    LMAuditingInvoker *invoker = [[LMAuditingInvoker alloc] init];
+    id classProxy = [[LMAspcetProxy alloc] initWithObject:class selectors:selValues andInvoker:invoker];
+
+    //使用指定的选择器向该代理发送消息
+    id integer = [classProxy sumaddend1:addend1 addend2:addend2];
+    NSLog(@&quot;使用指定的选择器向该代理发送消息:%@&quot;,integer);
+</code></pre>
+
+    <p><code><br/>
+        2017-03-03 23:37:40.413 Objective-C[32908:986614] 执行方法前selectorsumaddend1:addend2:, object:LMClass<br/>
+        2017-03-03 23:37:40.413 Objective-C[32908:986614] -25 + 10 = -15<br/>
+        2017-03-03 23:37:40.414 Objective-C[32908:986614] 执行方法后selectorsumaddend1:addend2:, object:LMClass<br/>
+        2017-03-03 23:37:40.414 Objective-C[32908:986614] 使用指定的选择器向该代理发送消息:-15<br/>
+    </code></p>
+
+</div>
+
+<!--页脚-->
+<footer>
+    <ul class="share-group">
+        <li><a href=""><img src="../../../Images/github.png" alt=""></a></li>
+        <li><a href=""><img src="../../../Images/sina.png" alt=""></a></li>
+        <li><a href=""><img src="../../../Images/QQ.png" alt=""></a></li>
+    </ul>
+    <div class="copy">
+        &copy 2017 Lemon
+    </div>
+</footer>
+<!--遮盖-->
+<div class="mask"></div>
+<!--侧边栏-->
+<div id="sidebar">
+    <ul>
+        <li><a href="../../../special/special_OC.html">Objective-C</a></li>
+        <li><a href="../../../special/special_swift.html">Swift</a></li>
+        <li><a href="../../../special/special_HTML5.html">HTML5</a></li>
+        <li><a href="../../../special/special_css.html">CSS</a></li>
+        <li><a href="../../../special/special_js.html">JavaScript</a></li>
+    </ul>
+</div>
+
+<button id="back-to-top">返回顶部</button>
+</body>
+</html>

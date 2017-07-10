@@ -1,0 +1,420 @@
+/*清理浮动*/
+.clearfix
+{
+    conetent: '';
+    display: block;
+    clear: both;
+}
+
+ul
+{
+    margin: 0;
+}
+
+header
+{
+    background: rgba(0,0,0,0.2);
+}
+
+nav
+{
+    position: fixed;
+    background-color: #16a085;
+    height: 50px;
+    width: 100%;
+    z-index: 1;
+}
+
+#banner
+{
+    background-color: transparent;
+    height: 700px;
+}
+
+nav ul
+{
+    list-style: none;
+    margin: 0 14px;
+    float: right;
+}
+
+nav ul li, nav .logo
+{
+    display: inline-block;
+    line-height: 50px;
+    margin-left: 20px;
+}
+
+nav ul li a, .logo
+{
+    text-decoration: none;
+    display: inline-block;
+    /*继承父元素*/
+    height: inherit;
+    color: #fff;
+}
+
+nav ul li.logo
+{
+    float: left;
+}
+
+#banner .inner
+{
+    max-width: 300px;
+    text-align: center;
+    margin: 0 auto;
+    position: relative;
+    top: 160px;
+}
+
+#banner .inner h1
+{
+    margin: 0;
+    color: #ffffff;
+}
+
+ button
+ {
+     border:none;
+     background-color: #333;
+     color: #eee;
+     padding: 10px ;
+ }
+
+ #banner button
+ {
+     padding:14px 60px;
+     background-color: #16a085;
+ }
+
+ #banner .inner .more
+ {
+     margin-top: 150px;
+
+ }
+
+ .sub-heading
+ {
+     line-height:30px;
+     margin: 30px 0;
+     font-size: 18px;
+     color: #ffffff;
+ }
+
+ .logo
+ {
+     font-size: 20px;
+     font-weight: 700;
+     letter-spacing: 1px;
+     float: left;
+ }
+
+ .logo a{
+     color: #fff;
+ }
+
+ .active
+ {
+     border-bottom: 4px solid #ffffff;
+ }
+
+/*内容*/
+.inner h1
+{
+    padding: 12px;
+    border-top: 2px solid #fff;
+    border-bottom: 2px solid #ffffff;
+}
+
+h2
+{
+    font-size: 30px;
+}
+
+h3
+{
+    font-size: 24px;
+}
+
+p
+{
+    font-size: 18px;
+    letter-spacing: 1px;
+}
+
+.hr
+{
+    width: 100%;
+    height: 2px;;
+    margin: 20px auto;
+}
+
+
+/*文章*/
+.list-section
+{
+    background-color: #ffffff;
+    color: black;
+}
+
+.list-section hr
+{
+    width: 90%;
+    height: 2px;
+    margin-left: 5%;
+    
+}
+
+.list-section .text-section
+{
+    margin-right: 5%;
+}
+
+.article-preview
+{
+    min-height: 200px;
+}
+
+.article-preview .img-section
+{
+    margin-left: 5%
+}
+
+.article-preview img
+{
+    height: 180px;
+    width: 180px;
+    /*border: none;*/
+}
+
+.article-preview div
+{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.article-preview p
+{
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.article-preview > div
+{
+    float: left;
+    /*两个div间有间隙,把字体变为0*/
+    font-size: 0;
+}
+
+/*伪元素, after 在元素之后添加内容*/
+.article-preview:after
+{
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.text-section
+{
+    position: relative;
+    width: 70%;
+    top:20px;
+    left: 50px;
+}
+
+.text-section .article-title
+{
+    text-decoration: none;
+    color: black;
+}
+
+.article-title:hover{
+    color: #1abc9c;
+}
+
+.text-section h2
+{
+    margin-bottom: 20px;
+}
+
+.text-section p
+{
+    font-size: 18px;
+    letter-spacing: 1px;
+    color: #888888;
+    line-height: 25px;
+}
+
+.other-section
+{
+    position: relative;
+    width: 60%;
+    left: 50px;
+    top:20px;
+}
+
+.other-section *
+{
+    font-size: 17px;
+}
+
+.other-section time
+{
+    margin-right: 20px;
+    color: #c7c7c7;
+}
+
+.other-section span
+{
+    margin: 0 15px ; 
+    color: #c7c7c7;
+}
+
+.readAll-button
+{
+    margin-left: 20px;
+    border: 1px solid;
+    border-radius: 10px;
+    text-decoration: none;
+    display: inline-block;
+    color: #1abc9c;
+    padding: 4px 15px;
+}
+
+.line
+{
+    padding: 10px;
+    background-color: white;
+}
+
+/*>>>>>>>>>>>>>>>页脚>>>>>>>>>>>>>>>>>>>>>>>>*/
+footer
+{
+    background-color: #16a085;
+    color: #ffffff;
+    min-height: 100px;
+    text-align: center;
+    font-size: 18px;
+}
+
+ul.share-group
+{
+    display: block;
+    width: inherit;
+    margin: 0 auto;
+    padding: 50px;
+}
+
+.share-group li
+{
+    display: inline-block;
+    padding: 10px;
+}
+
+.share-group li a
+{
+
+}
+
+.share-group li a img
+{
+    height: 40px;
+    width:40px;
+}
+
+.copy
+{
+    padding-bottom: 20px;
+}
+
+.main-wrapper
+{
+    overflow: hidden;
+    background: #444 url(../Images/pic12.jpg);
+    background-attachment: fixed;  /*固定*/
+    background-repeat: no-repeat; /*不重复*/
+    background-size: cover;       /*填满*/
+    background-position: center   /*居中*/
+}
+
+/*mask*/
+.mask
+{
+    display: none;
+    position: fixed;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right:0;
+    background: rgba(0,0,0,0.3);
+    z-index: 2;
+}
+
+/*侧栏CSS*/
+#sidebar
+{
+    position: fixed;
+    top:0;
+    right: -300px;
+    bottom:0;
+    width: 300px;
+    background: #1abc9c;
+    color: white;
+    padding: 20px 0;
+    z-index: 2;
+}
+
+#sidebar ul
+{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#sidebar ul a
+{
+    text-decoration: none;
+    padding: 10px 30px;
+    width: 100%;
+    display: inline-block;
+    color: #ffffff;
+}
+
+#sidebar ul a:hover
+{
+    background: #FFFFFF;
+    color: #1abc9c;
+}
+
+/*返回顶部按钮*/
+#back-to-top
+{
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    border: 1px solid #888888;
+}
+
+::selection
+{
+    background-color: #1abc9c;
+    color: #FFFFFF;
+}
+
+/*分页*/
+.page
+{
+    text-align: center;
+    background: #FFFFFF;
+    height:30px;
+}
+
+.page a
+{
+    text-decoration: none;
+    border:1px solid #1abc9c;
+    color: #1abc9c;
+    margin-top: 2px;
+    cursor: pointer;
+}
