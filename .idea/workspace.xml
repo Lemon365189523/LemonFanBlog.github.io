@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="63c4b6df-eaab-475c-9c26-6cbb22c710dc" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/special/special_OC.html" afterPath="$PROJECT_DIR$/special/special_OC.html" />
     </list>
@@ -25,11 +26,11 @@
     <splitter split-orientation="horizontal" split-proportion="0.5">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-          <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+          <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/index.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="125">
-                  <caret line="45" column="0" lean-forward="false" selection-start-line="45" selection-start-column="0" selection-end-line="61" selection-end-column="41" />
+                <state relative-caret-position="243">
+                  <caret line="48" column="30" lean-forward="false" selection-start-line="48" selection-start-column="30" selection-end-line="48" selection-end-column="30" />
                   <folding />
                 </state>
               </provider>
@@ -38,7 +39,7 @@
           <file leaf-file-name="WebViewJavascriptBridge.html" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/articles/2017/06/WebViewJavascriptBridge.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-365">
+                <state relative-caret-position="45">
                   <caret line="3" column="42" lean-forward="false" selection-start-line="3" selection-start-column="11" selection-end-line="3" selection-end-column="42" />
                   <folding />
                 </state>
@@ -55,11 +56,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="special_OC.html" pinned="false" current-in-tab="true">
+          <file leaf-file-name="special_OC.html" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/special/special_OC.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="468">
-                  <caret line="45" column="32" lean-forward="false" selection-start-line="45" selection-start-column="32" selection-end-line="45" selection-end-column="32" />
+                <state relative-caret-position="141">
+                  <caret line="34" column="41" lean-forward="true" selection-start-line="34" selection-start-column="41" selection-end-line="34" selection-end-column="41" />
                   <folding />
                 </state>
               </provider>
@@ -152,7 +153,7 @@
             <entry file="file://$PROJECT_DIR$/articles/2017/04/heapAndStack.html">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="315">
-                  <caret line="117" column="21" lean-forward="true" selection-start-line="117" selection-start-column="21" selection-end-line="117" selection-end-column="21" />
+                  <caret line="117" column="21" lean-forward="false" selection-start-line="117" selection-start-column="21" selection-end-line="117" selection-end-column="21" />
                   <folding />
                 </state>
               </provider>
@@ -219,8 +220,8 @@
         <option value="$PROJECT_DIR$/special/special_js.html" />
         <option value="$PROJECT_DIR$/articles/2017/05/socket.html" />
         <option value="$PROJECT_DIR$/articles/2017/04/heapAndStack.html" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/special/special_OC.html" />
+        <option value="$PROJECT_DIR$/index.html" />
       </list>
     </option>
   </component>
@@ -253,8 +254,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -437,11 +438,12 @@
       <workItem from="1496235453374" duration="727000" />
       <workItem from="1499083988520" duration="530000" />
       <workItem from="1500203276867" duration="326000" />
+      <workItem from="1501071955497" duration="82000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2931000" />
+    <option name="totallyTimeSpent" value="3013000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -864,7 +866,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/articles/2017/06/WebViewJavascriptBridge.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-365">
+        <state relative-caret-position="45">
           <caret line="3" column="42" lean-forward="false" selection-start-line="3" selection-start-column="11" selection-end-line="3" selection-end-column="42" />
           <folding />
         </state>
@@ -873,23 +875,23 @@
     <entry file="file://$PROJECT_DIR$/articles/2017/04/heapAndStack.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
-          <caret line="117" column="21" lean-forward="true" selection-start-line="117" selection-start-column="21" selection-end-line="117" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="125">
-          <caret line="45" column="0" lean-forward="false" selection-start-line="45" selection-start-column="0" selection-end-line="61" selection-end-column="41" />
+          <caret line="117" column="21" lean-forward="false" selection-start-line="117" selection-start-column="21" selection-end-line="117" selection-end-column="21" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/special/special_OC.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="468">
-          <caret line="45" column="32" lean-forward="false" selection-start-line="45" selection-start-column="32" selection-end-line="45" selection-end-column="32" />
+        <state relative-caret-position="141">
+          <caret line="34" column="41" lean-forward="true" selection-start-line="34" selection-start-column="41" selection-end-line="34" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="243">
+          <caret line="48" column="30" lean-forward="false" selection-start-line="48" selection-start-column="30" selection-end-line="48" selection-end-column="30" />
           <folding />
         </state>
       </provider>
