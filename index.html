@@ -1,33 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-us">
 <head>
     <meta charset="UTF-8">
-    <title>Objective-C</title>
+    <title>LemonBlog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="../JS/jQuery.js" type="text/javascript"></script>
-    <script src="../JS/main.js"></script>
+    <script src="JS/jQuery.js" type="text/javascript"></script>
+    <script src="JS/main.js"></script>
     <script></script>
     <!--常规化重置CSS 保留部分原有的样式-->
-    <link rel="stylesheet" href="../CSS/CSSReset.css">
-    <link rel="stylesheet" href="../CSS/main.css">
-    <link rel="stylesheet" href="../CSS/about_me.css">
-    <link rel="shortcut icon" href="../Images/bitbug_favicon.ico" />
-    <link rel="stylesheet" href="../CSS/special.css">
-    <script src="../JS/special.js"></script>
+    <link rel="stylesheet" href="CSS/CSSReset.css">
+    <link rel="stylesheet" href="CSS/main.css">
+    <link rel="stylesheet" href="CSS/about_me.css">
+    <link rel="shortcut icon" href="Images/bitbug_favicon.ico" />
 </head>
 <body>
-<div>
-    <nav id="nav">
-        <div class="logo"><a href=""></a></div>
-        <ul>
-            <li><a href="../index.html" >首页</a></li>
-            <li><a href="../about_me.html" >About</a></li>
-            <li id="sidebar_trigger"><a href="javascript:void(0);" >专题菜单</a></li>
-        </ul>
-    </nav>
-</div>
-<!-- 内容  -->
 <div class="main-wrapper">
+    <!--header 页头开始-->
+    <header>
+        <nav id="nav">
+            <div class="logo">Lemon Blog</div>
+            <ul>
+                <li><a href="javascript:void(0);" class="active">首页</a></li>
+                <li><a href="about_me.html" >About</a></li>
+                <li id="sidebar_trigger"><a href="javascript:void(0);" >专题菜单</a></li>
+            </ul>
+        </nav>
+        <div id="banner">
+            <div class="inner">
+                <h1>Lemon Fan</h1>
+                <p class="sub-heading">一个半桶水的程序员，半桶水OC，半桶水Swift，半桶水前端。</p>
+                <button id="aboutme_button">了解我</button>
+                <div class="more">
+                    <a href="javascript:void(0);" id="more_a"><img src="Images/up_arraw.png"></a>
+                    
+                </div>
+            </div>
+        </div>
+    </header>
+    <!--页头结束-->
+
+
     <!--内容 -->
     <div class="content">
         <section class="list-section">
@@ -37,132 +49,13 @@
                     <img src="" alt="">
                 </div>
                 <div class="text-section">
-                    <h2><a class="article-title" href="../articles/2017/06/WebViewJavascriptBridge.html">WebViewJavascriptBridge的使用和实现原理</a></h2>
+                    <h2><a class="article-title" href="articles/2017/06/WebViewJavascriptBridge.html">WebViewJavascriptBridge的使用和实现原理</a></h2>
                     <p>WebViewJavascriptBridge同时支持UIWeView和WKWebView，无论是JS调用OC还是OC调用JS，都可以正常传值和返回值；而且在页面加载时只要JS代码被运行就可以进行交互，</p>
                 </div>
                 <div class="other-section">
                     <time datetime="2017-6-15">2017-6-15</time>
                     <span>专题-OC</span>
-                    <a href="../articles/2017/06/WebViewJavascriptBridge.html" class="readAll-button">阅读全文</a>
-                </div>
-            </div>
-            <hr>
-            <!-------------------------->
-            <!--<<<文章list>>--->
-            <div class="article-preview">
-                <div class="img-section">
-                    <img src="../Images/socket.png" alt="">
-                </div>
-                <div class="text-section">
-                    <h2><a class="article-title" href="../articles/2017/05/socket.html">关于使用GCDAsyncSocket</a></h2>
-                    <p>我们平时说的最多的socket是什么呢，实际上socket是对TCP/IP协议的封装，Socket本身并不是协议，而是一个调用接口（API），通过Socket，我们能使用TCP/IP协议。实际上，Socket跟TCP/IP协议没有必然的联系。Socket编程接口在设计的时候，就希望也能适应其他的网络协议。</p>
-                </div>
-                <div class="other-section">
-                    <time datetime="2017-5-31">2017-5-31</time>
-                    <span>专题-OC</span>
-                    <a href="../articles/2017/05/socket.html" class="readAll-button">阅读全文</a>
-                </div>
-            </div>
-            <hr>
-            <!-------------------------->
-            <!--<<<文章list>>--->
-            <div class="article-preview">
-                <div class="img-section">
-                    <img src="../Images/线程执行顺序.png" alt="">
-                </div>
-                <div class="text-section">
-                    <h2><a class="article-title" href="../articles/2017/04/reactComponent.html">关于GCD</a></h2>
-                    <p>Grand Central Dispatch或者GCD，是一套低层API，提供了一种新的方法来进行并发程序编写。从基本功能上讲，GCD有点像NSOperationQueue，他们都允许程序将任务切分为多个单一任务然后提交至工作队列来并发地或者串行地执行。GCD比之NSOpertionQueue更底层更高效，并且它不是Cocoa框架的一部分。</p>
-                </div>
-                <div class="other-section">
-                    <time datetime="2017-5-7">2017-5-7</time>
-                    <span>专题-OC</span>
-                    <a href="../articles/2017/05/about-GCD.html">阅读全文</a>
-                </div>
-            </div>
-            <hr>
-            <!-------------------------->
-            <!--<<<文章list>>--->
-            <div class="article-preview">
-                <div class="img-section">
-                    <img src="../Images/响应方向.png" alt="">
-                </div>
-                <div class="text-section">
-                    <h2><a class="article-title" href="../articles/2017/04/responseChain.html">iOS点击屏幕的响应链</a></h2>
-                    <p>响应链，顾名思义，就是有一系列响应对象的集合成的一个层次结构。那什么又是响应对象呢？Cocoa里面规定：凡是继承于UIResponder或者UIResponder的子类的对象都可以作为响应对象，比如UIApplication、UIViewController和UIView。</p>
-                </div>
-                <div class="other-section">
-                    <time datetime="2017-4-18">2017-4-18</time>
-                    <span>专题-OC</span>
-                    <a href="../articles/2017/04/responseChain.html" class="readAll-button">阅读全文</a>
-                </div>
-            </div>
-            <hr>
-            <!-------------------------->
-            <!--<<<文章list>>--->
-            <div class="article-preview">
-                <div class="img-section">
-                    <img src="../Images/内存图.png" alt="">
-                </div>
-                <div class="text-section">
-                    <h2><a class="article-title" href="../articles/2017/04/heapAndStack.html">iOS的关于堆区和栈区</a></h2>
-                    <p>所有进程（执行的程序）都必须占用一定数量的内存，它或是用来存放从磁盘载入的程序代码，或是存放取自用户输入的数据等等。不过进程对这些内存的管理方式因内存用途不一而不尽相同，有些内存是事先静态分配和统一回收的，而有些却是按需要动态分配和回收的。</p>
-                </div>
-                <div class="other-section">
-                    <time datetime="2017-4-10">2017-4-10</time>
-                    <span>专题-OC</span>
-                    <a href="../articles/2017/04/heapAndStack.html" class="readAll-button">阅读全文</a>
-                </div>
-            </div>
-            <hr>
-            <!-------------------------->
-            <!--<<<文章list>>--->
-            <div class="article-preview">
-                <div class="img-section">
-                    <img src="../Images/运行时系统中的消息传递操作.jpg" alt="">
-                </div>
-                <div class="text-section">
-                    <h2><a class="article-title" href="../articles/2017/04/runtimeSystem.html">关于运行时系统</a></h2>
-                    <p>用Objective-C等面向对象语言编程时，“对象”就是“基本构建单元”，开发者可以通过对象来存储并传递数据。在对象之间传递数据并执行任务的过程叫做“消息传递”。当程序运行起来以后，为其提供相关支持的代码叫做“Objective-C运行期系统”，它提供了一些事得对象之间能够传递消息的重要函数，并且包括创建类实例所用的全部逻辑。</p>
-                </div>
-                <div class="other-section">
-                    <time datetime="2017-4-6">2017-4-6</time>
-                    <span>专题-OC</span>
-                    <a href="../articles/2017/04/runtimeSystem.html" class="readAll-button">阅读全文</a>
-                </div>
-            </div>
-            <hr>
-            <!-------------------------->
-            <!--<<<文章list>>--->
-            <div class="article-preview">
-                <div class="img-section">
-                    <img src="../Images/oc_icon.jpeg" alt="">
-                </div>
-                <div class="text-section">
-                    <h2><a class="article-title" href="../articles/2017/04/pointer.html">对Objectiv-C的一些指针的理解</a></h2>
-                    <p>本文章记录了在学习runtime系统中的遇到的一些关于指针的理解.</p>
-                </div>
-                <div class="other-section">
-                    <time datetime="2017-4-2">2017-4-2</time>
-                    <span>专题-OC</span>
-                    <a href="../articles/2017/04/pointer.html" class="readAll-button">阅读全文</a>
-                </div>
-            </div>
-            <hr>
-            <!-------------------------->
-            <!--<<<文章list>>--->
-            <div class="article-preview">
-                <div class="img-section">
-                    <img src="../Images/xiaoguotu.png" alt="">
-                </div>
-                <div class="text-section">
-                    <h2><a class="article-title" href="../articles/2017/03/LMAttributedString.html">LMAttributedString是一个函数式编辑富文本的库</a></h2>
-                    <p>写这个库的原因是在学习ReactiveCocoa时候，理解了那么一点点的关于函数式编程的思想而写的，所以写的比较简陋望见谅。</p>
-                </div>
-                <div class="other-section">
-                    <time datetime="2017-3-31">2017-3-31</time>
-                    <span>专题-OC</span>
-                    <a href="../articles/2017/03/LMAttributedString.html" class="readAll-button">阅读全文</a>
+                    <a href="articles/2017/06/WebViewJavascriptBridge.html" class="readAll-button">阅读全文</a>
                 </div>
             </div>
             <hr>
@@ -171,16 +64,16 @@
             <!--<<<文章list>>--->
             <div class="article-preview">
                 <div class="img-section">
-                    <img src="../Images/双向绑定.png" alt="">
+                    <img src="Images/socket.png" alt="">
                 </div>
                 <div class="text-section">
-                    <h2><a class="article-title" href="../articles/2017/03/ReactiveCocoa_Advanced.html">ReactiveCocoa 进阶学习</a></h2>
-                    <p>本章是学习和讲解使用RAC如何与项目结合使用.在使用中应该要注意哪些地方.</p>
+                    <h2><a class="article-title" href="articles/2017/05/socket.html">关于使用GCDAsyncSocket</a></h2>
+                    <p>我们平时说的最多的socket是什么呢，实际上socket是对TCP/IP协议的封装，Socket本身并不是协议，而是一个调用接口（API），通过Socket，我们能使用TCP/IP协议。实际上，Socket跟TCP/IP协议没有必然的联系。Socket编程接口在设计的时候，就希望也能适应其他的网络协议。</p>
                 </div>
                 <div class="other-section">
-                    <time datetime="2017-3-21">2017-3-21</time>
+                    <time datetime="2017-5-31">2017-5-31</time>
                     <span>专题-OC</span>
-                    <a href="../articles/2017/03/ReactiveCocoa_Advanced.html" class="readAll-button">阅读全文</a>
+                    <a href="articles/2017/05/socket.html" class="readAll-button">阅读全文</a>
                 </div>
             </div>
             <hr>
@@ -188,65 +81,235 @@
             <!--<<<文章list>>--->
             <div class="article-preview">
                 <div class="img-section">
-                    <img src="../Images/RAC.png" alt="">
+                    <img src="Images/线程执行顺序.png" alt="">
                 </div>
                 <div class="text-section">
-                    <h2><a class="article-title" href="../articles/2017/03/ReactiveCocoa_base.html">ReactiveCocoa基本了解</a></h2>
+                    <h2><a class="article-title" href="articles/2017/05/about-GCD.html">关于GCD</a></h2>
+                    <p>Grand Central Dispatch或者GCD，是一套低层API，提供了一种新的方法来进行并发程序编写。从基本功能上讲，GCD有点像NSOperationQueue，他们都允许程序将任务切分为多个单一任务然后提交至工作队列来并发地或者串行地执行。GCD比之NSOpertionQueue更底层更高效，并且它不是Cocoa框架的一部分。</p>
+                </div>
+                <div class="other-section">
+                    <time datetime="2017-5-7">2017-5-7</time>
+                    <span>专题-OC</span>
+                    <a href="articles/2017/05/about-GCD.html" class="readAll-button">阅读全文</a>
+                </div>
+            </div>
+            <hr>
+            <!-------------------------->
+            <!--<<<文章list>>--->
+            <div class="article-preview">
+                <div class="img-section">
+                    <img src="Images/react_icon.png" alt="">
+                </div>
+                <div class="text-section">
+                    <h2><a class="article-title" href="articles/2017/04/reactComponent.html">React.js 关于组件</a></h2>
+                    <p>本文章是记录学习React的组件的笔记,讲述关于组件的方法、state和props的使用、组件的组合使用等等。</p>
+                </div>
+                <div class="other-section">
+                    <time datetime="2017-4-21">2017-4-21</time>
+                    <span>专题-JavaScript</span>
+                    <a href="articles/2017/04/reactComponent.html" class="readAll-button">阅读全文</a>
+                </div>
+            </div>
+            <hr>
+            <!-------------------------->
+            <!--<<<文章list>>--->
+            <div class="article-preview">
+                <div class="img-section">
+                    <img src="Images/react.png" alt="">
+                </div>
+                <div class="text-section">
+                    <h2><a class="article-title" href="articles/2017/04/aboutReact.js.html">关于React.js</a></h2>
+                    <p>在Web开发中，我们总需要将变化的数据实时反应到UI上，这时就需要对DOM进行操作。而 复杂或频繁的DOM操作通常是性能瓶颈产生的原因 （如何进行高性能的复杂DOM操作通常是衡量一个前端开发人员技能的重要指标）。React为此引入了 虚拟DOM（Virtual DOM） 的机制：在浏览器端用Javascript实现了一套DOM API。</p>
+                </div>
+                <div class="other-section">
+                    <time datetime="2017-4-21">2017-4-21</time>
+                    <span>专题-JavaScript</span>
+                    <a href="articles/2017/04/aboutReact.js.html" class="readAll-button">阅读全文</a>
+                </div>
+            </div>
+            <hr>
+            <!-------------------------->
+            <!--<<<文章list>>--->
+            <div class="article-preview">
+                <div class="img-section">
+                    <img src="Images/响应方向.png" alt="">
+                </div>
+                <div class="text-section">
+                    <h2><a class="article-title" href="articles/2017/04/responseChain.html">iOS点击屏幕的响应链</a></h2>
+                    <p>响应链，顾名思义，就是有一系列响应对象的集合成的一个层次结构。那什么又是响应对象呢？Cocoa里面规定：凡是继承于UIResponder或者UIResponder的子类的对象都可以作为响应对象，比如UIApplication、UIViewController和UIView。</p>
+                </div>
+                <div class="other-section">
+                    <time datetime="2017-4-18">2017-4-18</time>
+                    <span>专题-OC</span>
+                    <a href="articles/2017/04/responseChain.html" class="readAll-button">阅读全文</a>
+                </div>
+            </div>
+            <hr>
+            <!-------------------------->
+            <!--<<<文章list>>--->
+            <div class="article-preview">
+                <div class="img-section">
+                    <img src="Images/内存图.png" alt="">
+                </div>
+                <div class="text-section">
+                    <h2><a class="article-title" href="articles/2017/04/heapAndStack.html">iOS的关于堆区和栈区</a></h2>
+                    <p>所有进程（执行的程序）都必须占用一定数量的内存，它或是用来存放从磁盘载入的程序代码，或是存放取自用户输入的数据等等。不过进程对这些内存的管理方式因内存用途不一而不尽相同，有些内存是事先静态分配和统一回收的，而有些却是按需要动态分配和回收的。</p>
+                </div>
+                <div class="other-section">
+                    <time datetime="2017-4-10">2017-4-10</time>
+                    <span>专题-OC</span>
+                    <a href="articles/2017/04/heapAndStack.html" class="readAll-button">阅读全文</a>
+                </div>
+            </div>
+            <hr>
+            <!-------------------------->
+            <!--<<<文章list>>--->
+            <div class="article-preview">
+                <div class="img-section">
+                    <img src="Images/运行时系统中的消息传递操作.jpg" alt="">
+                </div>
+                <div class="text-section">
+                    <h2><a class="article-title" href="articles/2017/04/runtimeSystem.html">关于运行时系统</a></h2>
+                    <p>用Objective-C等面向对象语言编程时，“对象”就是“基本构建单元”，开发者可以通过对象来存储并传递数据。在对象之间传递数据并执行任务的过程叫做“消息传递”。当程序运行起来以后，为其提供相关支持的代码叫做“Objective-C运行期系统”，它提供了一些事得对象之间能够传递消息的重要函数，并且包括创建类实例所用的全部逻辑。</p>
+                </div>
+                <div class="other-section">
+                    <time datetime="2017-4-6">2017-4-6</time>
+                    <span>专题-OC</span>
+                    <a href="articles/2017/04/runtimeSystem.html" class="readAll-button">阅读全文</a>
+                </div>
+            </div>
+            <hr>
+            <!-------------------------->
+            <!--<<<文章list>>--->
+            <div class="article-preview">
+                <div class="img-section">
+                    <img src="Images/oc_icon.jpeg" alt="">
+                </div>
+                <div class="text-section">
+                    <h2><a class="article-title" href="articles/2017/04/pointer.html">对Objectiv-C的一些指针的理解</a></h2>
+                    <p>本文章记录了在学习runtime系统中的遇到的一些关于指针的理解.</p>
+                </div>
+                <div class="other-section">
+                    <time datetime="2017-4-2">2017-4-2</time>
+                    <span>专题-OC</span>
+                    <a href="articles/2017/04/pointer.html" class="readAll-button">阅读全文</a>
+                </div>
+            </div>
+            <hr>
+            <!-------------------------->
+            <!--<<<文章list>>--->
+            <div class="article-preview">
+                <div class="img-section">
+                    <img src="Images/xiaoguotu.png" alt="">
+                </div>
+                <div class="text-section">
+                    <h2><a class="article-title" href="articles/2017/03/LMAttributedString.html">LMAttributedString是一个函数式编辑富文本的库</a></h2>
+                    <p>写这个库的原因是在学习ReactiveCocoa时候，理解了那么一点点的关于函数式编程的思想而写的，所以写的比较简陋望见谅。</p>
+                </div>
+                <div class="other-section">
+                    <time datetime="2017-3-31">2017-3-31</time>
+                    <span>专题-OC</span>
+                    <a href="articles/2017/03/LMAttributedString.html" class="readAll-button">阅读全文</a>
+                </div>
+            </div>
+            <hr>
+            <!-------------------------->
+            <!--<<<文章list>>--->
+            <div class="article-preview">
+                <div class="img-section">
+                    <img src="Images/swift_icon.jpeg" alt="">
+                </div>
+                <div class="text-section">
+                    <h2><a class="article-title" href="articles/2017/03/ReactiveSwift_base.html">Reactivecocoa 5.0 入门</a></h2>
+                    <p>本章是学习和讲解使用ReativeSwift的入门知识.最近再重新学习swift，从OC的RAC转到Swift的RAC方法调用大变样，各种的不适应.</p>
+                </div>
+                <div class="other-section">
+                    <time datetime="2017-3-26">2017-3-26</time>
+                    <span>专题-Swift</span>
+                    <a href="articles/2017/03/ReactiveSwift_base.html" class="readAll-button">阅读全文</a>
+                </div>
+            </div>
+            <hr>
+            <!-------------------------->
+            <!--<<<文章list>>--->
+            <div class="article-preview">
+                <div class="img-section">
+                    <img src="Images/双向绑定.png" alt="">
+                </div>
+                <div class="text-section">
+                    <h2><a class="article-title" href="articles/2017/03/ReactiveCocoa_Advanced.html">ReactiveCocoa 进阶学习</a></h2>
+                    <p>本章是学习和讲解使用RAC如何与项目结合使用.在使用中应该要注意哪些地方.</p>
+                </div>
+                <div class="other-section">
+                    <time datetime="2017-3-21">2017-3-21</time>
+                    <span>专题-OC</span>
+                    <a href="articles/2017/03/ReactiveCocoa_Advanced.html" class="readAll-button">阅读全文</a>
+                </div>
+            </div>
+            <hr>
+            <!-------------------------->
+            <!--<<<文章list>>--->
+            <div class="article-preview">
+                <div class="img-section">
+                    <img src="Images/RAC.png" alt="">
+                </div>
+                <div class="text-section">
+                    <h2><a class="article-title" href="articles/2017/03/ReactiveCocoa_base.html">ReactiveCocoa基本了解</a></h2>
                     <p>ReactiveCocoa（简称为RAC）,是由Github开源的一个应用于iOS和OS开发的新框架,ReactiveCocoa编程思想:函数式编程（Functional Programming）,响应式编程（Reactive Programming）,ReactiveCocoa被描述为函数响应式编程（FRP）框架。</p>
                 </div>
                 <div class="other-section">
                     <time datetime="2017-3-15">2017-3-15</time>
                     <span>专题-OC</span>
-                    <a href="../articles/2017/03/ReactiveCocoa_base.html" class="readAll-button">阅读全文</a>
+                    <a href="articles/2017/03/ReactiveCocoa_base.html" class="readAll-button">阅读全文</a>
                 </div>
             </div>
             <hr>
             <!-------------------------->
             <div class="article-preview">
                 <div class="img-section">
-                    <img src="../Images/block语法.png" alt="">
+                    <img src="Images/block语法.png" alt="">
                 </div>
                 <div class="text-section">
-                    <h2><a class="article-title" href="../articles/2017/03/aboutblock.html">块的理解和使用</a></h2>
+                    <h2><a class="article-title" href="articles/2017/03/aboutblock.html">块的理解和使用</a></h2>
                     <p>块是Objective-C语言提供的一强大特性.块与函数和方法类似,但除了是可执行代码外,块还含有与堆内存和栈内存绑定变量.块就是一个实现的闭包,一个允许方法其常规范围之外的变量的函数.</p>
                 </div>
                 <div class="other-section">
                     <time datetime="2017-3-15">2017-3-15</time>
                     <span>专题-OC</span>
-                    <a href="../articles/2017/03/aboutblock.html" class="readAll-button">阅读全文</a>
+                    <a href="articles/2017/03/aboutblock.html" class="readAll-button">阅读全文</a>
                 </div>
             </div>
             <hr>
             <!------------------------------------------->
             <div class="article-preview">
                 <div class="img-section">
-                    <img src="../Images/pic5.jpg" alt="">
+                    <img src="Images/pic5.jpg" alt="">
                 </div>
                 <div class="text-section">
-                    <h2><a class="article-title" href="../articles/2017/03/Foundation.html">Foundation框架中的系统服务</a></h2>
+                    <h2><a class="article-title" href="articles/2017/03/Foundation.html">Foundation框架中的系统服务</a></h2>
                     <p>主要介绍提供系统服务的Foundation框架类,这些类包括为网络,文件管理,系统信息搜索,文本处理等系统服务.</p>
                 </div>
                 <div class="other-section">
                     <time datetime="2017-3-14">2017-3-5</time>
                     <span>专题-OC</span>
-                    <a href="../articles/2017/03/Foundation.html" class="readAll-button">阅读全文</a>
+                    <a href="articles/2017/03/Foundation.html" class="readAll-button">阅读全文</a>
                 </div>
             </div>
-            <hr>
+             <hr>
             <!--------->
             <div class="article-preview">
                 <div class="img-section">
-                    <img src="../Images/OC实现Aop逻辑图.png" alt="">
+                    <img src="Images/OC实现Aop逻辑图.png" alt="">
                 </div>
                 <div class="text-section">
-                    <h2><a class="article-title" href="../articles/2017/03/userAPI.html">使用运行时系统API实现AOP编程</a></h2>
+                    <h2><a class="article-title" href="articles/2017/03/userAPI.html">使用运行时系统API实现AOP编程</a></h2>
                     <p>AOP为Aspect Oriented Programming的缩写，意为：面向切面编程，通过预编译方式和运行期动态代理实现程序功能的统一维护的一种技术。<br/>
                         AOP将功能与程序中的其他组成部分分割开....</p>
                 </div>
                 <div class="other-section">
                     <time datetime="2017-3-5">2017-3-5</time>
                     <span>专题-OC</span>
-                    <a href="../articles/2017/03/userAPI.html" class="readAll-button">阅读全文</a>
+                    <a href="articles/2017/03/userAPI.html" class="readAll-button">阅读全文</a>
                 </div>
             </div>
             <hr>
@@ -254,16 +317,16 @@
             <!------------------------->
             <div class="article-preview">
                 <div class="img-section">
-                    <img src="../Images/oc_icon.jpeg" alt="">
+                    <img src="Images/oc_icon.jpeg" alt="">
                 </div>
                 <div class="text-section">
-                    <h2><a class="article-title" href="../articles/2017/03/article_foundation.html">Foundation框架中常用类</a></h2>
+                    <h2><a class="article-title" href="articles/2017/03/article_foundation.html">Foundation框架中常用类</a></h2>
                     <p>Foundation框架定义了Objective-C程序通用API的基础层.其中包括根对象类,基础数据类型类,原始数据类型的封装类,用于存储和操作其他对象的集合类,以及用于处理系统信息,实现网络和其他功能的类..</p>
                 </div>
                 <div class="other-section">
                     <time datetime="2017-3-5">2017-3-5</time>
                     <span>专题-OC</span>
-                    <a href="../articles/2017/03/article_foundation.html" class="readAll-button">阅读全文</a>
+                    <a href="articles/2017/03/article_foundation.html" class="readAll-button">阅读全文</a>
                 </div>
             </div>
             <div class="line"></div>
@@ -273,27 +336,32 @@
 
     </div>
 
-<!--页脚-->
-<footer>
-    <ul class="share-group">
-        <li><a href="https://github.com/lemon365189523" target="_blank"><img src="../Images/github.png" ></a></li>
-        <li><a href="http://weibo.com/u/1936474822?is_all=1" target="_blank"><img src="../Images/sina.png" ></a></li>
-        <li><a href="javascript:void(0);"  id="share_qq"><img src="../Images/QQ.png" ></a></li>
-    </ul>
-    <div class="copy">
-        &copy 2017 Lemon
-    </div>
-</footer>
-<!--遮盖-->
+    <!--分页-->
+    <!--<div class="page">-->
+        <!--<a href="javascript:void(0);">1</a>-->
+    <!--</div>-->
+    <!-- 页脚 -->
+    <footer>
+        <ul class="share-group">
+            <li><a href="https://github.com/lemon365189523" target="_blank"><img src="Images/github.png" ></a></li>
+            <li><a href="http://weibo.com/u/1936474822?is_all=1" target="_blank"><img src="Images/sina.png" ></a></li>
+            <li><a href="javascript:void(0);"  id="share_qq"><img src="Images/QQ.png" ></a></li>
+        </ul>
+        <div class="copy">
+            &copy 2017 Lemon
+        </div>
+    </footer>
+</div>
+
 <div class="mask"></div>
-<!--侧边栏-->
+
 <div id="sidebar">
     <ul>
-        <li><a href="special_OC.html">Objective-C</a></li>
-        <li><a href="special_swift.html">Swift</a></li>
-        <li><a href="special_HTML5.html">HTML5</a></li>
-        <li><a href="special_css.html">CSS</a></li>
-        <li><a href="special_js.html">JavaScript</a></li>
+        <li><a href="special/special_OC.html">Objective-C</a></li>
+        <li><a href="special/special_swift.html">Swift</a></li>
+        <li><a href="special/special_HTML5.html">HTML5</a></li>
+        <li><a href="special/special_css.html">CSS</a></li>
+        <li><a href="special/special_js.html">JavaScript</a></li>
     </ul>
 </div>
 
